@@ -1,0 +1,38 @@
+# Backend runtime + merged dependencies from all modules
+# 说明：
+# 1) 本文件用于一键安装，冲突版本已做统一选择（尽量取较新版本）
+# 2) 原始逐模块版本见 backend/requirements.extracted.txt
+
+fastapi==0.116.1
+uvicorn==0.35.0
+openai==2.24.0
+python-dotenv==1.2.1
+pydantic==2.6.4
+pydantic-settings==2.2.1
+
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.4.2
+torch==2.2.2
+transformers==4.39.3
+faiss-cpu==1.7.4
+nltk==3.8.1
+networkx==3.2.1
+
+requests==2.31.0
+scrapy==2.11.1
+python-docx==1.1.0
+PyPDF2==3.0.1
+pytesseract==0.3.10
+Pillow==10.2.0
+beautifulsoup4==4.12.3
+lxml==4.9.4
+jieba==0.42.1
+spacy==3.7.2
+snownlp==0.12.3
+py2neo==2021.2.4
+neo4j==5.17.0
+schedule==1.2.1
+tqdm==4.66.2
+pydot==1.4.2
+matplotlib==3.8.4
