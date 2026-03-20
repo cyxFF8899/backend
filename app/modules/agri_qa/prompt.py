@@ -1,47 +1,64 @@
 ﻿from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
+ANSWER_SYSTEM_PROMPT = """
+## Role: 资深农技专家 (RAG 回答引擎)
 
-ANSWER_SYSTEM_PROMPT = """你是农业问答助手。
-请基于提供的检索与知识图谱证据回答，并遵循：
-1. 证据优先，不编造数据或结论；
-2. 语言简洁、专业、可执行；
-3. 若证据不足，明确指出不确定性并说明还需哪些信息；
-4. 只输出中文。"""
+## Core Mission: 
+严格基于提供的检索证据（Context）回答用户问题。若证据不足，宁缺毋滥。
 
-CLARIFY_SYSTEM_PROMPT = """你是农业咨询引导员。
-用户问题信息不足，请给出简短中文澄清引导，明确需要补充的关键要素（如作物、症状、地区、时间）。"""
+## Rules:
+1. **证据至上**：仅提取证据中的事实。禁止引入任何未在证据中出现的农药名称、施肥剂量或技术参数。
+2. **溯源式表达**：回答时尽量采用“根据[XX资料]，建议...”的结构，增加可信度。
+3. **行动导向**：结论必须直指操作（如：建议排水、喷施XX、剪除病叶），避免空洞的理论。
+4. **诚实原则**：当证据无法完全覆盖问题（如：提到了病害但没提药剂）时，必须明确指出：“目前资料仅显示病害特征，缺乏具体用药指导，建议补充提供[具体缺失项]。”
+5. **精炼输出**：删除所有礼貌性废话，直接输出干货，使用中文排版。
+"""
+
+CLARIFY_SYSTEM_PROMPT = """
+## Role: 农业咨询引导员
+
+## Task: 
+诊断用户意图。当信息不全或领域不匹配时，进行专业且有温度的追问。
+
+## Decision Logic:
+1. **领域分流**：
+   - 非农业问题：温和告知：“我专注于解决农作物种植、病虫害防治等农业问题。您可以试着问我：‘小麦抽穗期发现叶片发黄怎么办？’”。
+   - 疑似/模糊问题：遵循“农业优先”原则，将其引导至农业场景（如：问“怎么杀头”，追问“您是指农作物害虫的防治吗？”）。
+
+2. **精准追问 (关键)**：
+   - 严禁“夺命连环问”。根据上下文缺啥补啥，单次提问不超过 2 个变量。
+   - 优先级：[对象/作物] > [受害部位/征兆] > [地理位置/时令]。
+   - 示例：若用户只说“叶子黄了”，追问：“请问是什么作物？黄叶是从老叶开始还是新叶开始的？”
+
+3. **表达规范**：
+   - 拒绝模板化，语气要像面对面交谈的农技员。
+   - 禁止输出任何关于规则、标签或判断逻辑的文字，只输出回复用户的对话内容。
+"""
 
 DIRECT_SYSTEM_PROMPT = """你是农业问答助手。
-当前未启用检索与知识图谱，请直接回答用户问题。
-当问题依赖外部事实时，请明确提示：当前回答未使用检索证据。"""
+当前未启用检索，请直接回答用户问题；若涉及外部事实，明确说明“本回答未使用检索证据”。"""
 
 FOLLOWUP_SYSTEM_PROMPT = """你是农业问答助手。
-请根据当前问答上下文，生成后续追问建议。
-只输出 JSON，对象结构必须严格为：
+请根据当前上下文决定是否需要追问。
+你必须仅输出 JSON，结构如下：
 {
   "need_followup": true,
   "followup_questions": ["问题1", "问题2", "问题3"]
 }
-约束：
-1. followup_questions 最多 3 条；
-2. 每条问题都要具体、可回答、与当前主题强相关；
-3. 如果当前已足够完整，输出：
+如果不需要追问，输出：
 {"need_followup": false, "followup_questions": []}
-4. 不要输出任何 JSON 之外的文字。"""
+禁止输出 JSON 之外的任何文本。"""
 
 
 class PromptModule:
     @staticmethod
-    def _compact_intent(intent_packet: Dict[str, Any]) -> Dict[str, Any]:
+    def _compact_intent(intent_packet: dict[str, Any]) -> dict[str, Any]:
         return {
-            "intent": intent_packet.get("intent", "咨询"),
-            "domain": intent_packet.get("domain", "unclear"),
+            "intent": intent_packet.get("intent", "clarify"),
             "confidence": float(intent_packet.get("confidence", 0.0)),
-            "entities": intent_packet.get("entities", []),
-            "categories": intent_packet.get("categories", {}),
             "keywords": intent_packet.get("keywords", []),
         }
 
@@ -49,59 +66,63 @@ class PromptModule:
         self,
         *,
         query: str,
-        intent_packet: Dict[str, Any],
-        retrieval_hits: List[Dict[str, Any]],
-        kg_hits: List[Dict[str, Any]],
-        history: List[dict],
+        location: str = "",
+        intent_packet: dict[str, Any],
+        retrieval_hits: list[dict[str, Any]],
+        history: list[dict[str, Any]],
         target: str,
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         payload = {
             "query": query,
+            "location": location,
             "target": target,
-            "intent_packet": self._compact_intent(intent_packet),
-            "retrieval_hits": retrieval_hits,
-            "kg_hits": kg_hits,
+            "intent": self._compact_intent(intent_packet),
+            "intent_confidence": float(intent_packet.get("confidence", 0.0)),
+            "retrieval_hit_count": len(retrieval_hits),
             "conversation_history": history,
+            "retrieval_hits": retrieval_hits,
         }
         system_prompt = CLARIFY_SYSTEM_PROMPT if target == "clarify" else ANSWER_SYSTEM_PROMPT
         user_prompt = (
-            "请基于以下结构化上下文回答用户问题；若证据不足请明确说明：\n"
-            f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
+            "请阅读以下结构化上下文并回答用户问题。\n"
+            + json.dumps(payload, ensure_ascii=False, indent=2)
         )
         return system_prompt, user_prompt
 
-    def build_direct_messages(self, *, query: str, history: List[dict]) -> Tuple[str, str]:
+    def build_direct_messages(
+        self, *, query: str, history: list[dict[str, Any]], location: str = ""
+    ) -> tuple[str, str]:
         payload = {
             "query": query,
+            "location": location,
             "conversation_history": history,
         }
-        user_prompt = "请直接回答用户问题：\n" + json.dumps(
-            payload, ensure_ascii=False, indent=2
+        return (
+            DIRECT_SYSTEM_PROMPT,
+            "请直接回答用户问题：\n" + json.dumps(payload, ensure_ascii=False, indent=2),
         )
-        return DIRECT_SYSTEM_PROMPT, user_prompt
 
     def build_followup_messages(
         self,
         *,
         query: str,
-        intent_packet: Dict[str, Any],
+        location: str = "",
+        intent_packet: dict[str, Any],
         target: str,
-        history: List[dict],
-        retrieval_hits: List[Dict[str, Any]],
-        kg_hits: List[Dict[str, Any]],
+        history: list[dict[str, Any]],
+        retrieval_hits: list[dict[str, Any]],
         answer: str,
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         payload = {
             "query": query,
+            "location": location,
             "target": target,
-            "intent_packet": self._compact_intent(intent_packet),
-            "current_answer": answer,
+            "intent": self._compact_intent(intent_packet),
+            "answer": answer,
+            "conversation_history": history[-6:],
             "retrieval_hits": retrieval_hits[:3],
-            "kg_hits": kg_hits[:2],
-            "conversation_history": history[-4:],
         }
-        user_prompt = (
-            "请根据以下上下文判断是否需要追问，并按要求仅输出 JSON：\n"
-            f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
+        user_prompt = "请按要求输出 followup JSON：\n" + json.dumps(
+            payload, ensure_ascii=False, indent=2
         )
         return FOLLOWUP_SYSTEM_PROMPT, user_prompt

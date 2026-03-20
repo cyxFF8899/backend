@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from pathlib import Path
 
@@ -10,24 +10,27 @@ from .config import Settings
 from .db import DB
 from .modules import (
     ChatModule,
+    GraphModule,
     IntentModule,
-    KGModule,
     LLMModule,
     PromptModule,
     RetrievalModule,
     RouterModule,
 )
+from .repositories import ChatRepository
 
 
 def create_app() -> FastAPI:
     project_root = Path(__file__).resolve().parents[2]
     settings = Settings.from_env()
+
     db = DB(settings=settings, project_root=project_root)
     db.init()
+    chat_repo = ChatRepository(db=db)
 
     intent = IntentModule(settings=settings, project_root=project_root)
     retrieval = RetrievalModule(settings=settings, project_root=project_root)
-    kg = KGModule(settings=settings, project_root=project_root)
+    graph = GraphModule(settings=settings, project_root=project_root)
     router = RouterModule()
     prompt = PromptModule()
     llm = LLMModule(settings=settings)
@@ -35,9 +38,9 @@ def create_app() -> FastAPI:
     chat_module = ChatModule(
         settings=settings,
         db=db,
+        chat_repo=chat_repo,
         intent=intent,
         retrieval=retrieval,
-        kg=kg,
         router=router,
         prompt=prompt,
         llm=llm,
@@ -53,6 +56,7 @@ def create_app() -> FastAPI:
     )
     app.state.settings = settings
     app.state.chat_module = chat_module
+    app.state.graph_module = graph
     app.include_router(api_router)
     return app
 

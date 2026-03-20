@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import os
@@ -8,60 +8,61 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-# 统一加载环境变量，支持项目根目录或 backend 目录下的 .env
 load_dotenv()
 
 
 @dataclass
 class Settings:
-    """系统运行配置：集中管理路径与可调参数。"""
-
     app_name: str = "Agri Backend"
     db_path: str = "backend/data/chat.db"
-    intent_resources_dir: str = "IntentRecognition/semantic/resources"
-    kg_graph_path: str = "KnowledgeRetrieval/knowledge_base/knowledge_graph.json"
-    kg_samples_path: str = "KnowledgeGraph/data/samples/samples.json"
 
-    # LLM 配置（默认走 DashScope OpenAI 兼容接口）
+    # LLM (OpenAI-compatible API)
     llm_api_key: str = ""
     llm_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    llm_model: str = "qwen3.5-flash"
+    llm_model: str = "qwen3.5-plus"
     llm_temperature: float = 0.2
     llm_max_tokens: int = 1200
 
-    top_k_hits: int = 4
+    # RAG index and retrieval
+    embedding_model_name: str = "BAAI/bge-small-zh-v1.5"
+    chroma_persist_dir: str = "backend/data/chroma"
+    chroma_collection_name: str = "agri_knowledge"
+    index_data_dir: str = "backend/data/raw"
+    index_auto_build: bool = True
+    rag_chunk_size: int = 500
+    rag_chunk_overlap: int = 80
+    chroma_add_batch_size: int = 128
+    top_k_hits: int = 3
     hit_max_chars: int = 700
+
+    # Chat orchestration
+    context_window_turns: int = 5
     stream_chunk_sleep_ms: int = 0
-    history_limit: int = 6
+    followup_max_questions: int = 3
 
-    # 与原规则保持一致的默认权重
-    weight_disease_pest: float = 1.0
-    weight_climate: float = 1.0
-    weight_management: float = 1.0
-    weight_product: float = 1.5
-    weight_hint_bonus: float = 0.4
-    weight_crop_bonus: float = 0.2
-
-    fuzzy_enabled: bool = True
-    fuzzy_max_distance: int = 1
-    fuzzy_max_term_len: int = 4
+    # Intent module
+    intent_model_dir: str = "backend/models/intent/best_model"
+    intent_mapping_path: str = "backend/models/intent/best_model/intent_to_id.json"
+    intent_confidence_threshold: float = 0.7
+    non_agri_keywords_csv: str = (
+        "python,java,代码,编程,股票,基金,币圈,以太坊,比特币,娱乐新闻,明星八卦,"
+        "足球比分,篮球比分,电影票房,旅游攻略,恋爱建议"
+    )
+    agri_keywords_csv: str = (
+        "农业,作物,种植,播种,施肥,灌溉,病虫害,农药,农资,水稻,小麦,玉米,果树,蔬菜,大棚,"
+        "苗情,墒情,农产品,收购,产量,农机"
+    )
 
     @classmethod
     def from_env(cls) -> "Settings":
-        # 允许通过 .env 或系统环境变量覆盖默认值
         return cls(
             app_name=os.getenv("APP_NAME", "Agri Backend").strip(),
             db_path=os.getenv("DB_PATH", "backend/data/chat.db").strip(),
-            intent_resources_dir=os.getenv(
-                "INTENT_RESOURCES_DIR", "IntentRecognition/semantic/resources"
-            ).strip(),
-            kg_graph_path=os.getenv(
-                "KG_GRAPH_PATH", "KnowledgeRetrieval/knowledge_base/knowledge_graph.json"
-            ).strip(),
-            kg_samples_path=os.getenv(
-                "KG_SAMPLES_PATH", "KnowledgeGraph/data/samples/samples.json"
-            ).strip(),
-            llm_api_key=os.getenv("DASHSCOPE_API_KEY", "").strip(),
+            llm_api_key=(
+                os.getenv("DASHSCOPE_API_KEY", "").strip()
+                or os.getenv("OPENAI_API_KEY", "").strip()
+                or os.getenv("LLM_API_KEY", "").strip()
+            ),
             llm_base_url=os.getenv(
                 "DASHSCOPE_BASE_URL",
                 "https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -69,38 +70,67 @@ class Settings:
             llm_model=os.getenv("DASHSCOPE_MODEL", "qwen3.5-plus").strip(),
             llm_temperature=_safe_float(os.getenv("DASHSCOPE_TEMPERATURE"), 0.2),
             llm_max_tokens=_safe_int(os.getenv("DASHSCOPE_MAX_TOKENS"), 1200),
-            top_k_hits=_safe_int(os.getenv("TOP_K_HITS"), 4),
+            embedding_model_name=os.getenv(
+                "EMBEDDING_MODEL_NAME", "BAAI/bge-small-zh-v1.5"
+            ).strip(),
+            chroma_persist_dir=os.getenv("CHROMA_PERSIST_DIR", "backend/data/chroma").strip(),
+            chroma_collection_name=os.getenv("CHROMA_COLLECTION_NAME", "agri_knowledge").strip(),
+            index_data_dir=os.getenv("INDEX_DATA_DIR", "backend/data/raw").strip(),
+            index_auto_build=_safe_bool(os.getenv("INDEX_AUTO_BUILD"), True),
+            rag_chunk_size=_safe_int(os.getenv("RAG_CHUNK_SIZE"), 380),
+            rag_chunk_overlap=_safe_int(os.getenv("RAG_CHUNK_OVERLAP"), 60),
+            chroma_add_batch_size=_safe_int(os.getenv("CHROMA_ADD_BATCH_SIZE"), 128),
+            top_k_hits=_safe_int(os.getenv("TOP_K_HITS"), 3),
             hit_max_chars=_safe_int(os.getenv("HIT_MAX_CHARS"), 700),
+            context_window_turns=_safe_int(os.getenv("CONTEXT_WINDOW_TURNS"), 5),
             stream_chunk_sleep_ms=_safe_int(os.getenv("STREAM_CHUNK_SLEEP_MS"), 0),
-            history_limit=_safe_int(os.getenv("HISTORY_LIMIT"), 6),
-            weight_disease_pest=_safe_float(os.getenv("WEIGHT_DISEASE_PEST"), 1.0),
-            weight_climate=_safe_float(os.getenv("WEIGHT_CLIMATE"), 1.0),
-            weight_management=_safe_float(os.getenv("WEIGHT_MANAGEMENT"), 1.0),
-            weight_product=_safe_float(os.getenv("WEIGHT_PRODUCT"), 1.5),
-            weight_hint_bonus=_safe_float(os.getenv("WEIGHT_HINT_BONUS"), 0.4),
-            weight_crop_bonus=_safe_float(os.getenv("WEIGHT_CROP_BONUS"), 0.2),
-            fuzzy_enabled=_safe_bool(os.getenv("FUZZY_ENABLED"), True),
-            fuzzy_max_distance=_safe_int(os.getenv("FUZZY_MAX_DISTANCE"), 1),
-            fuzzy_max_term_len=_safe_int(os.getenv("FUZZY_MAX_TERM_LEN"), 4),
+            followup_max_questions=_safe_int(os.getenv("FOLLOWUP_MAX_QUESTIONS"), 3),
+            intent_model_dir=os.getenv(
+                "INTENT_MODEL_DIR", "backend/models/intent/best_model"
+            ).strip(),
+            intent_mapping_path=os.getenv(
+                "INTENT_MAPPING_PATH", "backend/models/intent/best_model/intent_to_id.json"
+            ).strip(),
+            intent_confidence_threshold=_safe_float(
+                os.getenv("INTENT_CONFIDENCE_THRESHOLD"), 0.7
+            ),
+            non_agri_keywords_csv=os.getenv("NON_AGRI_KEYWORDS_CSV", "").strip()
+            or cls.non_agri_keywords_csv,
+            agri_keywords_csv=os.getenv("AGRI_KEYWORDS_CSV", "").strip()
+            or cls.agri_keywords_csv,
         )
 
-    def resolve_resources_dir(self, project_root: Path) -> Path:
-        p = Path(self.intent_resources_dir)
-        if p.is_absolute():
-            return p
-        return (project_root / p).resolve()
+    def resolve_db_path(self, project_root: Path) -> Path:
+        return _resolve_path(project_root, self.db_path)
 
-    def resolve_kg_graph_path(self, project_root: Path) -> Path:
-        p = Path(self.kg_graph_path)
-        if p.is_absolute():
-            return p
-        return (project_root / p).resolve()
+    def resolve_chroma_dir(self, project_root: Path) -> Path:
+        return _resolve_path(project_root, self.chroma_persist_dir)
 
-    def resolve_kg_samples_path(self, project_root: Path) -> Path:
-        p = Path(self.kg_samples_path)
-        if p.is_absolute():
-            return p
-        return (project_root / p).resolve()
+    def resolve_index_data_dir(self, project_root: Path) -> Path:
+        return _resolve_path(project_root, self.index_data_dir)
+
+    def resolve_intent_model_dir(self, project_root: Path) -> Path:
+        return _resolve_path(project_root, self.intent_model_dir)
+
+    def resolve_intent_mapping_path(self, project_root: Path) -> Path:
+        return _resolve_path(project_root, self.intent_mapping_path)
+
+    def non_agri_keywords(self) -> list[str]:
+        return _parse_csv_keywords(self.non_agri_keywords_csv)
+
+    def agri_keywords(self) -> list[str]:
+        return _parse_csv_keywords(self.agri_keywords_csv)
+
+
+def _resolve_path(project_root: Path, value: str) -> Path:
+    p = Path(value)
+    if p.is_absolute():
+        return p
+    return (project_root / p).resolve()
+
+
+def _parse_csv_keywords(raw: str) -> list[str]:
+    return [x.strip() for x in raw.split(",") if x.strip()]
 
 
 def _safe_int(v: str | None, default: int) -> int:

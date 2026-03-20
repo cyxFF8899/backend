@@ -1,12 +1,12 @@
 from .agri_qa import ChatModule, LLMModule, PromptModule, RouterModule
+from .graph import GraphModule
 from .intent import IntentModule
-from .kg import KGModule
 from .retrieval import RetrievalModule
 
 __all__ = [
     "ChatModule",
+    "GraphModule",
     "IntentModule",
-    "KGModule",
     "LLMModule",
     "PromptModule",
     "RetrievalModule",

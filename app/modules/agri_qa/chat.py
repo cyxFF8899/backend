@@ -1,14 +1,14 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import re
 import time
-from typing import Any, Dict, Iterator, List
+from typing import Any, Iterator
 
 from ...config import Settings
 from ...db import DB
+from ...repositories import ChatRepository
 from ..intent import IntentModule
-from ..kg import KGModule
 from ..retrieval import RetrievalModule
 from .llm import LLMModule
 from .prompt import PromptModule
@@ -26,22 +26,21 @@ class ChatModule:
         *,
         settings: Settings,
         db: DB,
+        chat_repo: ChatRepository,
         intent: IntentModule,
         retrieval: RetrievalModule,
-        kg: KGModule,
         router: RouterModule,
         prompt: PromptModule,
         llm: LLMModule,
     ) -> None:
         self.settings = settings
         self.db = db
+        self.chat_repo = chat_repo
         self.intent = intent
         self.retrieval = retrieval
-        self.kg = kg
         self.router = router
         self.prompt = prompt
         self.llm = llm
-        self._session_history: Dict[str, List[Dict[str, str]]] = {}
 
     def chat(
         self,
@@ -51,7 +50,7 @@ class ChatModule:
         session_id: str = "",
         location: str = "",
         rag: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         context = self._build_context(
             query=query,
             user_id=user_id,
@@ -76,7 +75,7 @@ class ChatModule:
         session_id: str = "",
         location: str = "",
         rag: bool = True,
-    ) -> Iterator[Dict[str, Any]]:
+    ) -> Iterator[dict[str, Any]]:
         context = self._build_context(
             query=query,
             user_id=user_id,
@@ -98,7 +97,7 @@ class ChatModule:
 
         system_prompt, user_prompt = self._build_main_messages(context)
 
-        chunks: List[str] = []
+        chunks: list[str] = []
         for token in self.llm.stream_chat(system_prompt=system_prompt, user_prompt=user_prompt):
             if not token:
                 continue
@@ -129,13 +128,13 @@ class ChatModule:
         session_id: str,
         location: str,
         rag: bool,
-    ) -> Dict[str, Any]:
-        clean_query = self._clean_text(query)
-        if not clean_query:
-            clean_query = str(query or "").strip()
-
+    ) -> dict[str, Any]:
+        clean_query = self._clean_text(query) or str(query or "").strip()
+        clean_location = self._clean_location(location)
         sid = self._ensure_session_id(session_id=session_id, user_id=user_id)
-        history = self._clean_history(self._get_session_history(sid))
+
+        history_limit = max(2, int(self.settings.context_window_turns) * 2)
+        history = self._clean_history(self.chat_repo.list_recent(session_id=sid, limit=history_limit))
 
         if not rag:
             return {
@@ -143,39 +142,37 @@ class ChatModule:
                 "query": clean_query,
                 "user_id": user_id,
                 "session_id": sid,
-                "location": location,
+                "location": clean_location,
                 "intent_packet": {},
                 "target": "llm_direct",
                 "history": history,
                 "retrieval_hits": [],
-                "kg_hits": [],
             }
 
         intent_packet = self.intent.predict(clean_query)
         target = self.router.derive_target(
             intent=str(intent_packet.get("intent", "")),
-            domain=str(intent_packet.get("domain", "unclear")),
         )
 
-        retrieval_hits = self._clean_hits(
-            self.retrieval.search(query=clean_query, user_id=user_id, location=location)
-        )
-        kg_hits = self._clean_hits(self.kg.search(query=clean_query, top_k=3))
+        retrieval_hits: list[dict[str, Any]] = []
+        if target == "agri_expert":
+            retrieval_hits = self._clean_hits(
+                self.retrieval.search(query=clean_query, user_id=user_id, location=clean_location)
+            )
 
         return {
             "mode": "rag",
             "query": clean_query,
             "user_id": user_id,
             "session_id": sid,
-            "location": location,
+            "location": clean_location,
             "intent_packet": intent_packet,
             "target": target,
             "history": history,
             "retrieval_hits": retrieval_hits,
-            "kg_hits": kg_hits,
         }
 
-    def _generate_answer(self, context: Dict[str, Any]) -> str:
+    def _generate_answer(self, context: dict[str, Any]) -> str:
         if context["target"] == "handoff":
             return self._HANDOFF_ANSWER
 
@@ -185,23 +182,25 @@ class ChatModule:
             return answer
         return self._fallback_answer(context)
 
-    def _build_main_messages(self, context: Dict[str, Any]) -> tuple[str, str]:
+    def _build_main_messages(self, context: dict[str, Any]) -> tuple[str, str]:
         if context["mode"] == "direct_llm":
             return self.prompt.build_direct_messages(
                 query=context["query"],
                 history=context["history"],
+                location=context["location"],
             )
+
         return self.prompt.build_rag_messages(
             query=context["query"],
+            location=context["location"],
             intent_packet=context["intent_packet"],
             retrieval_hits=context["retrieval_hits"],
-            kg_hits=context["kg_hits"],
             history=context["history"],
             target=context["target"],
         )
 
-    def _build_response(self, *, context: Dict[str, Any], answer: str) -> Dict[str, Any]:
-        citations = self._collect_citations(context["retrieval_hits"], context["kg_hits"])
+    def _build_response(self, *, context: dict[str, Any], answer: str) -> dict[str, Any]:
+        citations = self._collect_citations(context["retrieval_hits"])
         need_followup, followup_questions = self._build_followups(context=context, answer=answer)
         return {
             "answer": answer,
@@ -211,24 +210,24 @@ class ChatModule:
             "session_id": context["session_id"],
         }
 
-    def _build_followups(self, *, context: Dict[str, Any], answer: str) -> tuple[bool, List[str]]:
-        if not answer.strip() or context["target"] == "handoff":
+    def _build_followups(self, *, context: dict[str, Any], answer: str) -> tuple[bool, list[str]]:
+        if not answer.strip() or context["target"] in {"handoff", "clarify"}:
             return False, []
 
         system_prompt, user_prompt = self.prompt.build_followup_messages(
             query=context["query"],
+            location=context["location"],
             intent_packet=context["intent_packet"],
             target=context["target"],
             history=context["history"],
             retrieval_hits=context["retrieval_hits"],
-            kg_hits=context["kg_hits"],
             answer=answer,
         )
         raw = self.llm.chat(system_prompt=system_prompt, user_prompt=user_prompt)
-        followup_questions = self._parse_followup_questions(raw)
-        return bool(followup_questions), followup_questions
+        questions = self._parse_followup_questions(raw)
+        return bool(questions), questions
 
-    def _parse_followup_questions(self, raw: str) -> List[str]:
+    def _parse_followup_questions(self, raw: str) -> list[str]:
         text = str(raw or "").strip()
         if not text:
             return []
@@ -245,18 +244,19 @@ class ChatModule:
         if not isinstance(questions_raw, list):
             return []
 
-        questions: List[str] = []
+        limit = max(1, int(self.settings.followup_max_questions))
+        questions: list[str] = []
         for item in questions_raw:
             question = self._clean_text(item)
             if not question or question in questions:
                 continue
             questions.append(question)
-            if len(questions) >= 3:
+            if len(questions) >= limit:
                 break
         return questions
 
     @staticmethod
-    def _parse_json_object(text: str) -> Dict[str, Any]:
+    def _parse_json_object(text: str) -> dict[str, Any]:
         try:
             parsed = json.loads(text)
             return parsed if isinstance(parsed, dict) else {}
@@ -272,13 +272,9 @@ class ChatModule:
             except json.JSONDecodeError:
                 return {}
 
-    def _fallback_answer(self, context: Dict[str, Any]) -> str:
-        snippets: List[str] = []
+    def _fallback_answer(self, context: dict[str, Any]) -> str:
+        snippets: list[str] = []
         for hit in context["retrieval_hits"][:2]:
-            content = str(hit.get("content") or "").strip()
-            if content:
-                snippets.append(content)
-        for hit in context["kg_hits"][:1]:
             content = str(hit.get("content") or "").strip()
             if content:
                 snippets.append(content)
@@ -291,26 +287,30 @@ class ChatModule:
     def _save_turn(self, *, session_id: str, user_id: str, query: str, answer: str) -> None:
         if not query.strip():
             return
-        self._append_session_history(session_id=session_id, query=query, answer=answer)
+
+        self.chat_repo.append_message(
+            session_id=session_id,
+            user_id=user_id,
+            role="user",
+            content=query,
+        )
+        self.chat_repo.append_message(
+            session_id=session_id,
+            user_id=user_id,
+            role="assistant",
+            content=answer,
+        )
+
+        # Keep legacy table in sync for compatibility with existing tooling.
         self.db.save_chat(user_id=user_id or "", query=query, answer=answer)
 
-    def _ensure_session_id(self, *, session_id: str, user_id: str) -> str:
+    @staticmethod
+    def _ensure_session_id(*, session_id: str, user_id: str) -> str:
         sid = str(session_id or "").strip()
         if sid:
             return sid
         uid = str(user_id or "anonymous").strip() or "anonymous"
         return f"sess_{uid}_{int(time.time() * 1000)}"
-
-    def _get_session_history(self, session_id: str) -> List[Dict[str, str]]:
-        return list(self._session_history.get(session_id, []))
-
-    def _append_session_history(self, *, session_id: str, query: str, answer: str) -> None:
-        if session_id not in self._session_history:
-            self._session_history[session_id] = []
-        self._session_history[session_id].append({"query": query, "answer": answer})
-        self._session_history[session_id] = self._session_history[session_id][
-            -self.settings.history_limit :
-        ]
 
     @classmethod
     def _clean_text(cls, raw: Any) -> str:
@@ -319,27 +319,27 @@ class ChatModule:
         text = cls._SPACE_PATTERN.sub(" ", text).strip()
         return text
 
-    def _clean_history(self, history: List[Dict[str, str]]) -> List[Dict[str, str]]:
-        cleaned: List[Dict[str, str]] = []
+    @classmethod
+    def _clean_location(cls, raw: Any) -> str:
+        return cls._clean_text(raw)[:32]
+
+    def _clean_history(self, history: list[dict[str, Any]]) -> list[dict[str, str]]:
+        cleaned: list[dict[str, str]] = []
         for turn in history:
             if not isinstance(turn, dict):
                 continue
-            item: Dict[str, str] = {}
-            for key in ("query", "answer", "role", "content"):
-                if key not in turn:
-                    continue
-                value = self._clean_text(turn.get(key, ""))
-                if value:
-                    item[key] = value
-            if item:
-                cleaned.append(item)
+            role = str(turn.get("role") or "").strip().lower()
+            content = self._clean_text(turn.get("content", ""))
+            if role not in {"user", "assistant"} or not content:
+                continue
+            cleaned.append({"role": role, "content": content})
         return cleaned
 
-    def _clean_hits(self, hits: Any) -> List[Dict[str, Any]]:
+    def _clean_hits(self, hits: Any) -> list[dict[str, Any]]:
         if not isinstance(hits, list):
             return []
 
-        cleaned: List[Dict[str, Any]] = []
+        cleaned: list[dict[str, Any]] = []
         seen = set()
         for hit in hits:
             if not isinstance(hit, dict):
@@ -355,15 +355,16 @@ class ChatModule:
                 continue
             seen.add(key)
 
-            item: Dict[str, Any] = {
+            item: dict[str, Any] = {
                 "content": content,
                 "source": source or "unknown",
                 "score": self._normalize_score(hit.get("score", 0.0)),
             }
-            title = self._clean_text(hit.get("title", ""))
-            if title:
-                item["title"] = title
+            metadata = hit.get("metadata", {})
+            if isinstance(metadata, dict):
+                item["metadata"] = metadata
             cleaned.append(item)
+
         return cleaned
 
     @staticmethod
@@ -389,12 +390,10 @@ class ChatModule:
             return 1.0
         return round(score, 4)
 
-    def _collect_citations(
-        self, retrieval_hits: List[Dict[str, Any]], kg_hits: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        items: List[Dict[str, Any]] = []
+    def _collect_citations(self, retrieval_hits: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
         seen = set()
-        for hit in retrieval_hits + kg_hits:
+        for hit in retrieval_hits:
             content = str(hit.get("content") or "").strip()
             source = str(hit.get("source") or "").strip()
             if not content:

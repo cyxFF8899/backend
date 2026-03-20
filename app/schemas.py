@@ -1,6 +1,6 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -15,15 +15,15 @@ class ChatRequest(BaseModel):
     query: str = Field(min_length=1, description="用户问题")
     user_id: str = Field(default="", description="用户ID")
     session_id: str = Field(default="", description="会话ID，建议前端透传")
-    location: str = Field(default="", description="地域信息，可选")
+    location: str = Field(default="", description="地区信息，可选")
     rag: bool = Field(default=True, description="是否启用RAG链路")
 
 
 class ChatResponse(BaseModel):
     answer: str
-    citations: List[CitationItem] = Field(default_factory=list)
+    citations: list[CitationItem] = Field(default_factory=list)
     need_followup: bool = False
-    followup_questions: List[str] = Field(default_factory=list)
+    followup_questions: list[str] = Field(default_factory=list)
     session_id: str = ""
 
 
@@ -37,28 +37,46 @@ class RetrievalDebugRequest(BaseModel):
     location: str = ""
 
 
-class KGDebugRequest(BaseModel):
+class GraphDebugRequest(BaseModel):
     query: str = Field(min_length=1)
-    top_k: int = 3
+    limit: int = 10
 
 
 class RouterDebugRequest(BaseModel):
     intent: str = ""
-    domain: str = "unclear"
+
+
+class KnowledgeIndexUpdateRequest(BaseModel):
+    rebuild: bool = Field(default=True, description="是否重建索引（建议 true，避免重复入库）")
+
+
+class KnowledgeUploadResponse(BaseModel):
+    filename: str
+    stored_as: str
+    size_bytes: int
+    raw_path: str
+
+
+class KnowledgeIndexResponse(BaseModel):
+    indexed_count: int
+    ready: bool
+    persist_dir: str
+    raw_data_dir: str
 
 
 class PromptRAGDebugRequest(BaseModel):
     query: str = Field(min_length=1)
-    intent_packet: Dict[str, Any] = Field(default_factory=dict)
-    retrieval_hits: List[Dict[str, Any]] = Field(default_factory=list)
-    kg_hits: List[Dict[str, Any]] = Field(default_factory=list)
-    history: List[Dict[str, str]] = Field(default_factory=list)
+    location: str = ""
+    intent_packet: dict[str, Any] = Field(default_factory=dict)
+    retrieval_hits: list[dict[str, Any]] = Field(default_factory=list)
+    history: list[dict[str, str]] = Field(default_factory=list)
     target: str = "agri_expert"
 
 
 class PromptDirectDebugRequest(BaseModel):
     query: str = Field(min_length=1)
-    history: List[Dict[str, str]] = Field(default_factory=list)
+    location: str = ""
+    history: list[dict[str, str]] = Field(default_factory=list)
 
 
 class LLMDebugRequest(BaseModel):
