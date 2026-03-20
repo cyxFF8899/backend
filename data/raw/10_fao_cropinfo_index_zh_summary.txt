@@ -1,0 +1,19 @@
+标题：FAO Crop Information（目录页）中文摘要
+来源：https://www.fao.org/land-water/databases-and-software/crop-information
+采集日期：2026-03-20
+文种：英文（本文件为中文摘要）
+类型：索引/导航页
+
+【页面作用】
+- 汇总各作物的水分关系、水分管理、作物需水量与对水分的产量响应等信息入口
+
+【目录结构（示例）】
+- Cereal crops：Maize, Sorghum, Wheat
+- Fibrecrops：Cotton
+- Oil and protein crops：Soybean, Sunflower 等
+- Root crops：Potato
+- Vegetable crops：Tomato, Onion 等
+
+【二期采集建议】
+- 优先抓取：主粮（稻/麦/玉米）、大豆、棉花、马铃薯、蔬菜（番茄等）
+- 对每个作物页抽取：ETm、Kc、根系深度、允许亏缺p、Ky、关键敏感期（并结构化成JSON/CSV）
