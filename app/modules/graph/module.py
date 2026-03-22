@@ -58,12 +58,13 @@ class GraphModule:
 
         try:
             # 简单的全文搜索示例
+            keyword = str(query or "").strip()
             cypher_query = """
             MATCH (n) 
-            WHERE n.name CONTAINS $query OR n.description CONTAINS $query
+            WHERE n.name CONTAINS $keyword OR n.description CONTAINS $keyword
             RETURN n LIMIT $limit
             """
-            result = session.run(cypher_query, query=query, limit=limit)
+            result = session.run(cypher_query, keyword=keyword, limit=limit)
             return [record["n"]._properties for record in result]
         except Exception as e:
             print(f"搜索失败: {e}")
