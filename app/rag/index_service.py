@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 from itertools import islice
 from pathlib import Path
@@ -21,7 +22,13 @@ class IndexService:
         self.persist_dir = settings.resolve_chroma_dir(project_root)
         self.data_dir = settings.resolve_index_data_dir(project_root)
         self.collection_name = settings.chroma_collection_name
+        self._apply_embedding_mirror()
         self._embeddings = HuggingFaceEmbeddings(model_name=settings.embedding_model_name)
+
+    def _apply_embedding_mirror(self) -> None:
+        endpoint = str(self.settings.embedding_hf_endpoint or "").strip()
+        if endpoint:
+            os.environ["HF_ENDPOINT"] = endpoint
 
     def ensure_index(self) -> None:
         if self.is_ready():

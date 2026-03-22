@@ -25,6 +25,7 @@ class Settings:
 
     # RAG index and retrieval
     embedding_model_name: str = "BAAI/bge-small-zh-v1.5"
+    embedding_hf_endpoint: str = "https://hf-mirror.com"
     chroma_persist_dir: str = "backend/data/chroma"
     chroma_collection_name: str = "agri_knowledge"
     index_data_dir: str = "backend/data/raw"
@@ -72,6 +73,9 @@ class Settings:
             llm_max_tokens=_safe_int(os.getenv("DASHSCOPE_MAX_TOKENS"), 1200),
             embedding_model_name=os.getenv(
                 "EMBEDDING_MODEL_NAME", "BAAI/bge-small-zh-v1.5"
+            ).strip(),
+            embedding_hf_endpoint=os.getenv(
+                "EMBEDDING_HF_ENDPOINT", "https://hf-mirror.com"
             ).strip(),
             chroma_persist_dir=os.getenv("CHROMA_PERSIST_DIR", "backend/data/chroma").strip(),
             chroma_collection_name=os.getenv("CHROMA_COLLECTION_NAME", "agri_knowledge").strip(),
