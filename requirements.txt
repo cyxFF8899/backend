@@ -28,3 +28,4 @@ overrides>=7.3.1
 langchain-unstructured==0.1.6
 unstructured>=0.18.0,<0.19
 python-multipart==0.0.22
+neo4j==5.19.0

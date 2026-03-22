@@ -36,6 +36,11 @@ class Settings:
     top_k_hits: int = 3
     hit_max_chars: int = 700
 
+    # Neo4j
+    neo4j_uri: str = "bolt://localhost:7687"
+    neo4j_username: str = "neo4j"
+    neo4j_password: str = "password"
+
     # Chat orchestration
     context_window_turns: int = 5
     stream_chunk_sleep_ms: int = 0
@@ -102,6 +107,9 @@ class Settings:
             or cls.non_agri_keywords_csv,
             agri_keywords_csv=os.getenv("AGRI_KEYWORDS_CSV", "").strip()
             or cls.agri_keywords_csv,
+            neo4j_uri=os.getenv("NEO4J_URI", "bolt://localhost:7687").strip(),
+            neo4j_username=os.getenv("NEO4J_USERNAME", "neo4j").strip(),
+            neo4j_password=os.getenv("NEO4J_PASSWORD", "password").strip(),
         )
 
     def resolve_db_path(self, project_root: Path) -> Path:

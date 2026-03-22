@@ -201,6 +201,61 @@ def debug_graph(req: GraphDebugRequest, request: Request) -> dict[str, Any]:
     return {"hits": hits, "count": len(hits)}
 
 
+from pydantic import BaseModel
+
+
+class CreateNodeRequest(BaseModel):
+    label: str
+    properties: dict[str, Any]
+
+
+class CreateRelationshipRequest(BaseModel):
+    start_id: str
+    end_id: str
+    relationship_type: str
+    properties: dict[str, Any] = None
+
+
+@router.post("/graph/node")
+def create_graph_node(request: Request, req: CreateNodeRequest) -> dict[str, Any]:
+    """创建图数据库节点。"""
+    module = _graph_module(request)
+    node = module.create_node(req.label, req.properties)
+    return {"node": node}
+
+
+@router.post("/graph/relationship")
+def create_graph_relationship(request: Request, req: CreateRelationshipRequest) -> dict[str, Any]:
+    """创建图数据库关系。"""
+    module = _graph_module(request)
+    success = module.create_relationship(req.start_id, req.end_id, req.relationship_type, req.properties)
+    return {"success": success}
+
+
+@router.get("/graph/node/{node_id}")
+def get_graph_node(request: Request, node_id: str) -> dict[str, Any]:
+    """获取图数据库节点。"""
+    module = _graph_module(request)
+    node = module.get_node_by_id(node_id)
+    return {"node": node}
+
+
+@router.get("/graph/node/{node_id}/relationships")
+def get_graph_node_relationships(request: Request, node_id: str) -> dict[str, Any]:
+    """获取图数据库节点的关系。"""
+    module = _graph_module(request)
+    relationships = module.get_relationships(node_id)
+    return {"relationships": relationships, "count": len(relationships)}
+
+
+@router.get("/graph/search")
+def search_graph(request: Request, query: str, limit: int = 10) -> dict[str, Any]:
+    """搜索图数据库。"""
+    module = _graph_module(request)
+    hits = module.search(query, limit=limit)
+    return {"hits": hits, "count": len(hits)}
+
+
 @router.post("/debug/router")
 def debug_router(req: RouterDebugRequest, request: Request) -> dict[str, Any]:
     module = _chat_module(request)
