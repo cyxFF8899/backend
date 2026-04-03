@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import Iterator
 
@@ -7,7 +7,8 @@ from ...config import Settings
 try:
     from langchain_core.messages import HumanMessage, SystemMessage
     from langchain_openai import ChatOpenAI
-except Exception:  # pragma: no cover
+except Exception as e:  # pragma: no cover
+    print(f"Failed to import LangChain modules: {e}")
     HumanMessage = None  # type: ignore
     SystemMessage = None  # type: ignore
     ChatOpenAI = None  # type: ignore
@@ -20,6 +21,7 @@ class LLMModule:
 
         self.client = None
         if self.enabled and ChatOpenAI is not None:
+            print(f"DEBUG: Initializing LLM with model: {settings.llm_model}")
             try:
                 self.client = ChatOpenAI(
                     api_key=settings.llm_api_key,
@@ -28,7 +30,8 @@ class LLMModule:
                     temperature=settings.llm_temperature,
                     max_tokens=settings.llm_max_tokens,
                 )
-            except Exception:
+            except Exception as e:
+                print(f"Failed to initialize ChatOpenAI: {e}")
                 self.client = None
 
     def chat(self, *, system_prompt: str, user_prompt: str) -> str:

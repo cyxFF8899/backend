@@ -14,7 +14,11 @@ load_dotenv()
 @dataclass
 class Settings:
     app_name: str = "Agri Backend"
-    db_path: str = "backend/data/chat.db"
+    database_url: str = "mysql+pymysql://user:password@localhost:3306/agri_db"
+
+    # Security
+    secret_key: str = "generate_your_secret_key_here"
+    access_token_expire_minutes: int = 1440
 
     # LLM (OpenAI-compatible API)
     llm_api_key: str = ""
@@ -63,7 +67,9 @@ class Settings:
     def from_env(cls) -> "Settings":
         return cls(
             app_name=os.getenv("APP_NAME", "Agri Backend").strip(),
-            db_path=os.getenv("DB_PATH", "backend/data/chat.db").strip(),
+            database_url=os.getenv("DATABASE_URL", "mysql+pymysql://user:password@localhost:3306/agri_db").strip(),
+            secret_key=os.getenv("SECRET_KEY", "generate_your_secret_key_here").strip(),
+            access_token_expire_minutes=_safe_int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"), 1440),
             llm_api_key=(
                 os.getenv("DASHSCOPE_API_KEY", "").strip()
                 or os.getenv("OPENAI_API_KEY", "").strip()
@@ -111,9 +117,6 @@ class Settings:
             neo4j_username=os.getenv("NEO4J_USERNAME", "neo4j").strip(),
             neo4j_password=os.getenv("NEO4J_PASSWORD", "password").strip(),
         )
-
-    def resolve_db_path(self, project_root: Path) -> Path:
-        return _resolve_path(project_root, self.db_path)
 
     def resolve_chroma_dir(self, project_root: Path) -> Path:
         return _resolve_path(project_root, self.chroma_persist_dir)

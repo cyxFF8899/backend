@@ -76,16 +76,43 @@ class ChatModule:
         location: str = "",
         rag: bool = True,
     ) -> Iterator[dict[str, Any]]:
-        context = self._build_context(
-            query=query,
-            user_id=user_id,
-            session_id=session_id,
-            location=location,
-            rag=rag,
-        )
+        try:
+            context = self._build_context(
+                query=query,
+                user_id=user_id,
+                session_id=session_id,
+                location=location,
+                rag=rag,
+            )
 
-        if context["target"] == "handoff":
-            answer = self._HANDOFF_ANSWER
+            if context["target"] == "handoff":
+                answer = self._HANDOFF_ANSWER
+                self._save_turn(
+                    session_id=context["session_id"],
+                    user_id=context["user_id"],
+                    query=context["query"],
+                    answer=answer,
+                )
+                yield {"type": "done", "data": self._build_response(context=context, answer=answer)}
+                return
+
+            system_prompt, user_prompt = self._build_main_messages(context)
+
+            chunks: list[str] = []
+            for token in self.llm.stream_chat(system_prompt=system_prompt, user_prompt=user_prompt):
+                if not token:
+                    continue
+                chunks.append(token)
+                yield {"type": "chunk", "content": token}
+                if self.settings.stream_chunk_sleep_ms > 0:
+                    time.sleep(self.settings.stream_chunk_sleep_ms / 1000.0)
+
+            answer = "".join(chunks).strip()
+            if not answer:
+                answer = self.llm.chat(system_prompt=system_prompt, user_prompt=user_prompt).strip()
+                if not answer:
+                    answer = self._fallback_answer(context)
+
             self._save_turn(
                 session_id=context["session_id"],
                 user_id=context["user_id"],
@@ -93,32 +120,8 @@ class ChatModule:
                 answer=answer,
             )
             yield {"type": "done", "data": self._build_response(context=context, answer=answer)}
-            return
-
-        system_prompt, user_prompt = self._build_main_messages(context)
-
-        chunks: list[str] = []
-        for token in self.llm.stream_chat(system_prompt=system_prompt, user_prompt=user_prompt):
-            if not token:
-                continue
-            chunks.append(token)
-            yield {"type": "chunk", "content": token}
-            if self.settings.stream_chunk_sleep_ms > 0:
-                time.sleep(self.settings.stream_chunk_sleep_ms / 1000.0)
-
-        answer = "".join(chunks).strip()
-        if not answer:
-            answer = self.llm.chat(system_prompt=system_prompt, user_prompt=user_prompt).strip()
-            if not answer:
-                answer = self._fallback_answer(context)
-
-        self._save_turn(
-            session_id=context["session_id"],
-            user_id=context["user_id"],
-            query=context["query"],
-            answer=answer,
-        )
-        yield {"type": "done", "data": self._build_response(context=context, answer=answer)}
+        except Exception as e:
+            yield {"type": "error", "message": f"流式处理失败: {e}"}
 
     def _build_context(
         self,
@@ -134,7 +137,7 @@ class ChatModule:
         sid = self._ensure_session_id(session_id=session_id, user_id=user_id)
 
         history_limit = max(2, int(self.settings.context_window_turns) * 2)
-        history = self._clean_history(self.chat_repo.list_recent(session_id=sid, limit=history_limit))
+        history = self._clean_history(self.chat_repo.list_recent(user_id=user_id, session_id=sid, limit=history_limit))
 
         if not rag:
             return {
@@ -300,9 +303,6 @@ class ChatModule:
             role="assistant",
             content=answer,
         )
-
-        # Keep legacy table in sync for compatibility with existing tooling.
-        self.db.save_chat(user_id=user_id or "", query=query, answer=answer)
 
     @staticmethod
     def _ensure_session_id(*, session_id: str, user_id: str) -> str:

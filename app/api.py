@@ -3,15 +3,31 @@ from __future__ import annotations
 import json
 import re
 import time
+from datetime import timedelta
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, List
 
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile, Depends, status
 from fastapi.responses import StreamingResponse
+from sqlalchemy import select, delete
 
+from .auth import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    get_current_user,
+)
+from .models import User, ChatMessage, PlantingPlan
 from .schemas import (
     ChatRequest,
     ChatResponse,
+    ChatMessageResponse,
+    PlantingPlanCreate,
+    PlantingPlanResponse,
+    UserCreate,
+    UserLogin,
+    Token,
+    UserResponse,
     GraphDebugRequest,
     IntentDebugRequest,
     KnowledgeIndexResponse,
@@ -33,12 +49,188 @@ def _chat_module(request: Request):
     return request.app.state.chat_module
 
 
-def _graph_module(request: Request):
-    module = getattr(request.app.state, "graph_module", None)
-    if module is None:
-        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
-    return module
+def _db_manager(request: Request):
+    return request.app.state.db
 
+
+# --- Auth Routes ---
+
+@router.post("/auth/register", response_model=UserResponse)
+def register(user_in: UserCreate, request: Request):
+    db = _db_manager(request)
+    with db.session() as session:
+        # Check if user exists
+        existing_user = session.execute(
+            select(User).where(User.username == user_in.username)
+        ).scalar_one_or_none()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already registered")
+        
+        new_user = User(
+            username=user_in.username,
+            email=user_in.email,
+            hashed_password=get_password_hash(user_in.password),
+            is_active=True
+        )
+        session.add(new_user)
+        session.flush() # 确保分配了 ID
+        session.refresh(new_user) # 刷新属性
+        return new_user
+
+
+@router.post("/auth/login", response_model=Token)
+def login(user_in: UserLogin, request: Request):
+    db = _db_manager(request)
+    settings = request.app.state.settings
+    with db.session() as session:
+        user = session.execute(
+            select(User).where(User.username == user_in.username)
+        ).scalar_one_or_none()
+        if not user or not verify_password(user_in.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token = create_access_token(
+            data={"sub": user.username},
+            secret_key=settings.secret_key,
+            expires_delta=access_token_expires
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.get("/auth/me", response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+# --- Chat Routes ---
+
+@router.post("/chat", response_model=ChatResponse)
+def chat(
+    req: ChatRequest, 
+    request: Request,
+    current_user: User = Depends(get_current_user)
+) -> dict[str, Any]:
+    module = _chat_module(request)
+    return module.chat(
+        query=req.query,
+        user_id=str(current_user.id),
+        session_id=req.session_id,
+        location=req.location,
+        rag=req.rag,
+    )
+
+
+@router.post("/chat/stream")
+def chat_stream(
+    req: ChatRequest, 
+    request: Request,
+    current_user: User = Depends(get_current_user)
+) -> StreamingResponse:
+    module = _chat_module(request)
+
+    def event_iter() -> Iterator[str]:
+        try:
+            for event in module.stream_chat(
+                query=req.query,
+                user_id=str(current_user.id),
+                session_id=req.session_id,
+                location=req.location,
+                rag=req.rag,
+            ):
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+        except Exception as e:
+            error_event = {"type": "error", "message": str(e)}
+            yield f"data: {json.dumps(error_event, ensure_ascii=False)}\n\n"
+        yield "event: end\ndata: [DONE]\n\n"
+
+    return StreamingResponse(
+        event_iter(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.get("/chat/history", response_model=List[ChatMessageResponse])
+def get_chat_history(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    limit: int = 50
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        messages = session.execute(
+            select(ChatMessage)
+            .where(ChatMessage.user_id == current_user.id)
+            .order_by(ChatMessage.created_at.desc())
+            .limit(limit)
+        ).scalars().all()
+        return list(reversed(list(messages)))
+
+
+# --- Plans Routes ---
+
+@router.post("/plans", response_model=PlantingPlanResponse)
+def create_plan(
+    plan_in: PlantingPlanCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        new_plan = PlantingPlan(
+            user_id=current_user.id,
+            crop_name=plan_in.crop_name,
+            plan_details=plan_in.plan_details,
+            status=plan_in.status
+        )
+        session.add(new_plan)
+        session.flush()
+        return new_plan
+
+
+@router.get("/plans", response_model=List[PlantingPlanResponse])
+def list_plans(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        plans = session.execute(
+            select(PlantingPlan).where(PlantingPlan.user_id == current_user.id)
+        ).scalars().all()
+        return list(plans)
+
+
+@router.delete("/plans/{plan_id}")
+def delete_plan(
+    plan_id: int,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        plan = session.execute(
+            select(PlantingPlan).where(
+                PlantingPlan.id == plan_id, 
+                PlantingPlan.user_id == current_user.id
+            )
+        ).scalar_one_or_none()
+        if not plan:
+            raise HTTPException(status_code=404, detail="Plan not found")
+        session.delete(plan)
+        return {"status": "ok"}
+
+
+# --- Knowledge Routes (Admin/Internal) ---
 
 def _index_service(request: Request):
     chat_module = _chat_module(request)
@@ -81,42 +273,16 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@router.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest, request: Request) -> dict[str, Any]:
-    module = _chat_module(request)
-    return module.chat(
-        query=req.query,
-        user_id=req.user_id,
-        session_id=req.session_id,
-        location=req.location,
-        rag=req.rag,
-    )
-
-
-@router.post("/chat/stream")
-def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
-    module = _chat_module(request)
-
-    def event_iter() -> Iterator[str]:
-        for event in module.stream_chat(
-            query=req.query,
-            user_id=req.user_id,
-            session_id=req.session_id,
-            location=req.location,
-            rag=req.rag,
-        ):
-            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
-        yield "event: end\ndata: [DONE]\n\n"
-
-    return StreamingResponse(
-        event_iter(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
-    )
+@router.get("/weather")
+def get_weather(city: str):
+    # 模拟天气数据
+    return {
+        "city": city,
+        "temperature": 22,
+        "weather": "晴",
+        "humidity": "45%",
+        "windSpeed": "3级"
+    }
 
 
 @router.post("/knowledge/upload", response_model=KnowledgeUploadResponse)
@@ -180,6 +346,8 @@ def knowledge_index_status(request: Request) -> dict[str, Any]:
     return _index_payload(service, count=count)
 
 
+# --- Debug Routes ---
+
 @router.post("/debug/intent")
 def debug_intent(req: IntentDebugRequest, request: Request) -> dict[str, Any]:
     module = _chat_module(request)
@@ -196,63 +364,10 @@ def debug_retrieval(req: RetrievalDebugRequest, request: Request) -> dict[str, A
 
 @router.post("/debug/graph")
 def debug_graph(req: GraphDebugRequest, request: Request) -> dict[str, Any]:
-    module = _graph_module(request)
+    module = getattr(request.app.state, "graph_module", None)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
     hits = module.search(req.query, limit=max(1, int(req.limit)))
-    return {"hits": hits, "count": len(hits)}
-
-
-from pydantic import BaseModel
-
-
-class CreateNodeRequest(BaseModel):
-    label: str
-    properties: dict[str, Any]
-
-
-class CreateRelationshipRequest(BaseModel):
-    start_id: str
-    end_id: str
-    relationship_type: str
-    properties: dict[str, Any] = None
-
-
-@router.post("/graph/node")
-def create_graph_node(request: Request, req: CreateNodeRequest) -> dict[str, Any]:
-    """创建图数据库节点。"""
-    module = _graph_module(request)
-    node = module.create_node(req.label, req.properties)
-    return {"node": node}
-
-
-@router.post("/graph/relationship")
-def create_graph_relationship(request: Request, req: CreateRelationshipRequest) -> dict[str, Any]:
-    """创建图数据库关系。"""
-    module = _graph_module(request)
-    success = module.create_relationship(req.start_id, req.end_id, req.relationship_type, req.properties)
-    return {"success": success}
-
-
-@router.get("/graph/node/{node_id}")
-def get_graph_node(request: Request, node_id: str) -> dict[str, Any]:
-    """获取图数据库节点。"""
-    module = _graph_module(request)
-    node = module.get_node_by_id(node_id)
-    return {"node": node}
-
-
-@router.get("/graph/node/{node_id}/relationships")
-def get_graph_node_relationships(request: Request, node_id: str) -> dict[str, Any]:
-    """获取图数据库节点的关系。"""
-    module = _graph_module(request)
-    relationships = module.get_relationships(node_id)
-    return {"relationships": relationships, "count": len(relationships)}
-
-
-@router.get("/graph/search")
-def search_graph(request: Request, query: str, limit: int = 10) -> dict[str, Any]:
-    """搜索图数据库。"""
-    module = _graph_module(request)
-    hits = module.search(query, limit=limit)
     return {"hits": hits, "count": len(hits)}
 
 
@@ -307,9 +422,4 @@ def debug_llm_stream(req: LLMDebugRequest, request: Request) -> StreamingRespons
     return StreamingResponse(
         event_iter(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
     )

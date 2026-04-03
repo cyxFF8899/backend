@@ -1,8 +1,65 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
-from typing import Any
+from datetime import datetime
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
+
+
+# --- Auth Schemas ---
+class UserCreate(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=6)
+    email: Optional[str] = None
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# --- Chat Schemas ---
+class ChatMessageResponse(BaseModel):
+    id: int
+    role: str
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# --- Plan Schemas ---
+class PlantingPlanCreate(BaseModel):
+    crop_name: str = Field(..., max_length=100)
+    plan_details: str
+    status: str = "进行中"
+
+
+class PlantingPlanResponse(BaseModel):
+    id: int
+    user_id: int
+    crop_name: str
+    plan_details: str
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
 class CitationItem(BaseModel):
@@ -13,7 +70,6 @@ class CitationItem(BaseModel):
 
 class ChatRequest(BaseModel):
     query: str = Field(min_length=1, description="用户问题")
-    user_id: str = Field(default="", description="用户ID")
     session_id: str = Field(default="", description="会话ID，建议前端透传")
     location: str = Field(default="", description="地区信息，可选")
     rag: bool = Field(default=True, description="是否启用RAG链路")
