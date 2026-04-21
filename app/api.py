@@ -24,6 +24,10 @@ from .schemas import (
     ChatMessageResponse,
     PlantingPlanCreate,
     PlantingPlanResponse,
+    ExpertConsultationCreate,
+    ExpertConsultationResponse,
+    ScheduleCreate,
+    ScheduleResponse,
     UserCreate,
     UserLogin,
     Token,
@@ -176,10 +180,10 @@ def get_chat_history(
         return list(reversed(list(messages)))
 
 
-# --- Plans Routes ---
+# --- Planting Schemes Routes ---
 
-@router.post("/plans", response_model=PlantingPlanResponse)
-def create_plan(
+@router.post("/planting-schemes", response_model=PlantingPlanResponse)
+def create_planting_scheme(
     plan_in: PlantingPlanCreate,
     request: Request,
     current_user: User = Depends(get_current_user)
@@ -197,8 +201,8 @@ def create_plan(
         return new_plan
 
 
-@router.get("/plans", response_model=List[PlantingPlanResponse])
-def list_plans(
+@router.get("/planting-schemes", response_model=List[PlantingPlanResponse])
+def list_planting_schemes(
     request: Request,
     current_user: User = Depends(get_current_user)
 ):
@@ -210,8 +214,8 @@ def list_plans(
         return list(plans)
 
 
-@router.delete("/plans/{plan_id}")
-def delete_plan(
+@router.delete("/planting-schemes/{plan_id}")
+def delete_planting_scheme(
     plan_id: int,
     request: Request,
     current_user: User = Depends(get_current_user)
@@ -225,9 +229,171 @@ def delete_plan(
             )
         ).scalar_one_or_none()
         if not plan:
-            raise HTTPException(status_code=404, detail="Plan not found")
+            raise HTTPException(status_code=404, detail="Planting scheme not found")
         session.delete(plan)
         return {"status": "ok"}
+
+
+# --- Expert Consultation Routes ---
+
+@router.post("/expert-consultations", response_model=ExpertConsultationResponse)
+def create_consultation(
+    cons_in: ExpertConsultationCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        from .models import ExpertConsultation
+        new_cons = ExpertConsultation(
+            user_id=current_user.id,
+            expert_name=cons_in.expert_name,
+            category=cons_in.category,
+            content=cons_in.content,
+            status="待回复"
+        )
+        session.add(new_cons)
+        session.flush()
+        return new_cons
+
+
+@router.get("/expert-consultations", response_model=List[ExpertConsultationResponse])
+def list_consultations(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        from .models import ExpertConsultation
+        cons = session.execute(
+            select(ExpertConsultation).where(ExpertConsultation.user_id == current_user.id)
+        ).scalars().all()
+        return list(cons)
+
+
+# --- Schedules Routes ---
+
+@router.get("/schedules", response_model=List[ScheduleResponse])
+def list_schedules(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        from .models import Schedule
+        schedules = session.execute(
+            select(Schedule).where(Schedule.user_id == current_user.id)
+        ).scalars().all()
+        return list(schedules)
+
+
+@router.post("/schedules", response_model=ScheduleResponse)
+def create_schedule(
+    sched_in: ScheduleCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        from .models import Schedule
+        new_sched = Schedule(
+            user_id=current_user.id,
+            title=sched_in.title,
+            content=sched_in.content,
+            date=sched_in.date,
+            is_completed=sched_in.is_completed
+        )
+        session.add(new_sched)
+        session.flush()
+        return new_sched
+
+
+@router.put("/schedules/{schedule_id}", response_model=ScheduleResponse)
+def update_schedule(
+    schedule_id: int,
+    sched_in: ScheduleCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        from .models import Schedule
+        sched = session.execute(
+            select(Schedule).where(
+                Schedule.id == schedule_id, 
+                Schedule.user_id == current_user.id
+            )
+        ).scalar_one_or_none()
+        if not sched:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        
+        sched.title = sched_in.title
+        sched.content = sched_in.content
+        sched.date = sched_in.date
+        sched.is_completed = sched_in.is_completed
+        return sched
+
+
+@router.delete("/schedules/{schedule_id}")
+def delete_schedule(
+    schedule_id: int,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    db = _db_manager(request)
+    with db.session() as session:
+        from .models import Schedule
+        sched = session.execute(
+            select(Schedule).where(
+                Schedule.id == schedule_id, 
+                Schedule.user_id == current_user.id
+            )
+        ).scalar_one_or_none()
+        if not sched:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        session.delete(sched)
+        return {"status": "ok"}
+
+
+# --- Admin Routes ---
+
+@router.get("/admin/users", response_model=List[UserResponse])
+def get_admin_users(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    # 增加管理员权限校验
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Only admins can access this resource")
+        
+    db = _db_manager(request)
+    with db.session() as session:
+        users = session.execute(select(User)).scalars().all()
+        return list(users)
+
+
+@router.get("/admin/dashboard/stats")
+def get_dashboard_stats(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    # 增加管理员权限校验
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Only admins can access this resource")
+        
+    db = _db_manager(request)
+    with db.session() as session:
+        from sqlalchemy import func
+        user_count = session.execute(select(func.count(User.id))).scalar()
+        msg_count = session.execute(select(func.count(ChatMessage.id))).scalar()
+        plan_count = session.execute(select(func.count(PlantingPlan.id))).scalar()
+        
+        return {
+            "total_users": user_count,
+            "total_messages": msg_count,
+            "total_plans": plan_count,
+            "system_status": "healthy"
+        }
 
 
 # --- Knowledge Routes (Admin/Internal) ---

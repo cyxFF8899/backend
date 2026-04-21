@@ -62,6 +62,48 @@ class PlantingPlanResponse(BaseModel):
         from_attributes = True
 
 
+# --- Expert Consultation Schemas ---
+class ExpertConsultationCreate(BaseModel):
+    expert_name: str = Field(..., max_length=50)
+    category: str = Field(..., max_length=50)
+    content: str
+
+
+class ExpertConsultationResponse(BaseModel):
+    id: int
+    user_id: int
+    expert_name: str
+    category: str
+    content: str
+    reply: Optional[str]
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# --- Schedule Schemas ---
+class ScheduleCreate(BaseModel):
+    title: str = Field(..., max_length=100)
+    content: str
+    date: datetime
+    is_completed: bool = False
+
+
+class ScheduleResponse(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    content: str
+    date: datetime
+    is_completed: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class CitationItem(BaseModel):
     content: str = ""
     source: str = ""
