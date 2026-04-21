@@ -184,10 +184,11 @@ class GraphModule:
             cypher_query = """
             MATCH (a)-[r]->(b) 
             WHERE a.id = $node_id
-            RETURN type(r) AS type, b.id AS target_id, b.name AS target_name, r
+            RETURN type(r) AS type, b.id AS target_id, b.name AS target_name, r, id(r) AS rel_id
             """
             result = session.run(cypher_query, node_id=node_id)
             return [{
+                "id": record["rel_id"],
                 "type": record["type"],
                 "target_id": record["target_id"],
                 "target_name": record["target_name"],
@@ -196,6 +197,53 @@ class GraphModule:
         except Exception as e:
             print(f"获取关系失败: {e}")
             return []
+        finally:
+            session.close()
+
+    def update_node(self, node_id: str, properties: dict[str, Any]) -> dict[str, Any]:
+        """更新节点。"""
+        session = self._get_session()
+        if not session:
+            return {}
+        try:
+            props_str = ", ".join([f"n.{k} = ${k}" for k in properties.keys()])
+            cypher_query = f"MATCH (n) WHERE n.id = $node_id SET {props_str} RETURN n"
+            result = session.run(cypher_query, node_id=node_id, **properties)
+            record = result.single()
+            return record["n"]._properties if record else {}
+        except Exception as e:
+            print(f"更新节点失败: {e}")
+            return {}
+        finally:
+            session.close()
+
+    def delete_node(self, node_id: str) -> bool:
+        """删除节点（级联删除关系）。"""
+        session = self._get_session()
+        if not session:
+            return False
+        try:
+            cypher_query = "MATCH (n) WHERE n.id = $node_id DETACH DELETE n"
+            session.run(cypher_query, node_id=node_id)
+            return True
+        except Exception as e:
+            print(f"删除节点失败: {e}")
+            return False
+        finally:
+            session.close()
+
+    def delete_relationship(self, rel_id: int) -> bool:
+        """删除关系。"""
+        session = self._get_session()
+        if not session:
+            return False
+        try:
+            cypher_query = "MATCH ()-[r]->() WHERE id(r) = $rel_id DELETE r"
+            session.run(cypher_query, rel_id=rel_id)
+            return True
+        except Exception as e:
+            print(f"删除关系失败: {e}")
+            return False
         finally:
             session.close()
 

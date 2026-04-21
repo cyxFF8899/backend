@@ -1,0 +1,1142 @@
+[
+    {
+        "crop_id": 59,
+        "crop_name": "榴莲",
+        "crop_alias": "韶子、麝香猫果",
+        "crop_category": "锦葵科榴莲属热带常绿乔木果树",
+        "growth_characteristic": "喜高温高湿、强光，忌霜冻，需年均温22℃以上；生长周期长，嫁接苗3-5年结果；异花授粉，果实硕大、果皮坚硬带刺",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性砂壤土；忌低洼积水、黏重板结土壤",
+        "planting_method": "1.选种：选用健壮、无病虫优良接穗与砧木；2.繁殖：以芽接、劈接为主，20-25℃操作；3.定植：株行距5-6米，根系舒展、压实浇水",
+        "field_management": "幼树勤施薄肥，结果期重施磷钾肥；及时修剪病弱枝、过密枝；花期辅助授粉，幼果期疏果保品质",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "果蛀虫、蓟马、卷叶蛾",
+                    "control_method": "果蛀虫用氯虫苯甲酰胺；蓟马用吡虫啉；卷叶蛾用菊酯类药剂，配合清洁田园"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "疫霉病、拟茎点菌腐烂病",
+                    "control_method": "疫霉病用乙磷铝浸果；拟茎点菌病降湿护果，发病初期用百菌清、甲基托布津"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、果腐、空壳、长势弱",
+            "control_method": "落果：补肥、稳温、辅助授粉；裂果：均衡供水、补钙；果腐：排水降湿、及时防病；空壳：加强花期水肥与授粉"
+        },
+        "harvest_method": "果柄变黄、果壳微裂、香气浓郁时采收；轻采轻放，避免损伤，阴凉通风存放",
+        "suitable_area": "热带地区为主，我国海南、云南南部适宜种植"
+    },
+    {
+        "crop_id": 60,
+        "crop_name": "西瓜",
+        "crop_alias": "寒瓜、夏瓜",
+        "crop_category": "葫芦科西瓜属一年生蔓生藤本水果作物",
+        "growth_characteristic": "喜温暖干燥、强光，耐旱怕涝；根系发达、吸肥快；分枝性强，雌雄同株异花；生育期短，果实膨大需水肥集中",
+        "suitable_soil": "疏松深厚、排水良好的砂壤土；pH5-7，忌重茬、黏重积水土壤",
+        "planting_method": "1.选种：抗病、高产优质品种；2.播种：地温15℃以上，深度3-4cm；3.定植：行距1.5-2米、株距40-50cm",
+        "field_management": "苗期控水蹲苗；伸蔓期压蔓、整枝；膨果期大水大肥，以钾为主；后期控肥控水增糖",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "地老虎、蚜虫、白粉虱",
+                    "control_method": "地老虎用毒饵诱杀+辛硫磷灌根；蚜虫、白粉虱用吡虫啉、啶虫脒"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "白粉病、蔓割病、立枯病",
+                    "control_method": "白粉病用粉锈宁、甲基托布津；蔓割病涂抹药剂；立枯病用恶霉灵、甲基立枯磷灌根"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "畸形果、空心、裂果、早衰、徒长",
+            "control_method": "畸形果：控温、均衡供水；裂果：稳湿补钙；徒长：控氮、整枝压蔓；早衰：膨果期补钾与叶面肥"
+        },
+        "harvest_method": "果实成熟、瓜纹清晰、瓜皮发亮、瓜蒂干枯时采收；轻放防碰，阴凉通风贮藏",
+        "suitable_area": "全国广泛种植，黄淮海、西北、东北、长江流域均为主产区"
+    },
+    {
+        "crop_id": 61,
+        "crop_name": "板栗",
+        "crop_alias": "栗子、毛栗、风栗",
+        "crop_category": "壳斗科栗属落叶乔木干果果树",
+        "growth_characteristic": "喜光、耐寒、耐旱、耐瘠薄；深根性，寿命长；雌雄同株异花，结果枝结果，需配置授粉树",
+        "suitable_soil": "土层深厚、排水良好的微酸性砂壤土、片麻岩土；pH5.5-7.2，忌低洼黏重、积水地",
+        "planting_method": "1.选苗：二年生壮苗、无病虫；2.定植：株行距2×3米或3×4米；3.栽植：埋土至根颈，压实浇透水",
+        "field_management": "基肥秋施为主，追肥分萌芽、花前、膨果三期；冬季修剪，夏剪控旺；花期补硼防空蓬",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、木撩尺蠖、桃蛀螟、栗透羽",
+                    "control_method": "红蜘蛛用哒螨灵、阿维菌素；桃蛀螟采后喷药、及时脱粒；透羽蛾刮皮堵孔"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "胴枯病、栗红斑点病",
+                    "control_method": "胴枯病刮除病斑、石硫合剂涂抹；红斑点病控温湿、适时采收"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "空蓬、落蓬、果小、虫果、烂果",
+            "control_method": "空蓬：花期补硼；落蓬：稳温稳湿、辅助授粉；虫果：及时清园、药剂防治桃蛀螟"
+        },
+        "harvest_method": "栗苞变黄开裂、坚果光亮饱满时采收；捡拾落栗或打苞收集，晾晒去杂，阴凉干燥贮藏",
+        "suitable_area": "我国北方、燕山、太行山、云贵川山区广泛种植"
+    },
+    {
+        "crop_id": 62,
+        "crop_name": "槟榔",
+        "crop_alias": "宾门、橄榄子、青仔",
+        "crop_category": "棕榈科槟榔属热带常绿乔木经济作物",
+        "growth_characteristic": "喜高温高湿、喜光，忌霜冻；年均温22℃以上适宜；根系浅、喜湿润；定植7-8年结果，寿命长",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土、壤土；海拔300米以下、避风向阳坡地最佳",
+        "planting_method": "1.选种：充分成熟、果形均匀的第二、三托果实；2.催芽：堆积晒种、盖草淋水；3.定植：株距2米，施足基肥",
+        "field_management": "幼树遮阴保湿；结果期每年追肥3-4次，以氮磷钾配合；除草培土，保护裸露根系",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、红蜘蛛、地下害虫",
+                    "control_method": "蚜虫、红蜘蛛用吡虫啉、阿维菌素；地下害虫撒石灰、辛硫磷灌根"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "根腐病、叶腐病",
+                    "control_method": "根腐病撒石灰、百菌清消毒；叶腐病用碱式硫酸铜灌根"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "冻害、黄叶、烂根、落果、果小",
+            "control_method": "冻害：树干涂白、熏烟、增施磷钾；黄叶：排水、补肥；烂根：高垄排水、药剂灌根"
+        },
+        "harvest_method": "果实成熟呈金黄色、果皮饱满时采收；砍下果穗，脱粒晾晒，干燥通风贮藏",
+        "suitable_area": "海南、广东、广西、云南、福建、台湾等热带地区"
+    },
+    {
+        "crop_id": 63,
+        "crop_name": "菠萝",
+        "crop_alias": "凤梨、黄梨",
+        "crop_category": "凤梨科凤梨属多年生草本水果作物",
+        "growth_characteristic": "喜温暖、喜光、耐旱、耐贫瘠；浅根系、无主根；莲座状株型，顶芽、托芽、吸芽繁殖；周年可结果",
+        "suitable_soil": "疏松透气、排水良好的砂壤土；pH4.5-6.5，忌积水、黏重、盐碱地",
+        "planting_method": "1.选芽：顶芽、托芽、吸芽健壮无病；2.定植：双行种植，卡因种亩3000-4000株，巴厘种4000-5000株；3.浅种不露芽、不埋心",
+        "field_management": "基肥足、追肥分期；花芽分化期控氮增钾；现蕾后控水，避免心部积水",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蟋蟀、金龟子幼虫、白蚁、蚜虫",
+                    "control_method": "蟋蟀毒饵诱杀；蛴螬、白蚁敌百虫灌根；蚜虫用吡虫啉"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "凋萎病、日灼病、心腐病",
+                    "control_method": "凋萎病种苗消毒、防粉蚧；日灼病束叶遮果、套袋；心腐病排水、勿深栽"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "心腐、裂果、日灼、凋萎、小果",
+            "control_method": "心腐：浅种、排水、不浇心；裂果：稳湿补钙；日灼：遮阴；凋萎：防治粉蚧、轮作"
+        },
+        "harvest_method": "果实饱满、果皮转黄、香气透出时采收；一果一剪，轻放防碰，常温通风贮藏",
+        "suitable_area": "华南、西南、闽南、海南等热带亚热带地区"
+    },
+    {
+        "crop_id": 64,
+        "crop_name": "菠萝蜜",
+        "crop_alias": "木菠萝、树菠萝、包蜜",
+        "crop_category": "桑科波罗蜜属常绿乔木热带水果作物",
+        "growth_characteristic": "喜高温高湿、强光，忌霜冻；树干结果，果实巨大；生长快、结果早，嫁接苗2-3年投产",
+        "suitable_soil": "土层深厚、肥沃疏松、排水良好的微酸性土壤；平地、低丘陵最佳",
+        "planting_method": "1.定植：春植3-4月、秋植9-11月；2.株行距6-7米；3.根系舒展、压实浇足定根水",
+        "field_management": "幼树促梢扩冠；结果树采后重施基肥；疏花疏果，每平方米留3-5个果；环割促花",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "天牛、金龟子、蚜虫",
+                    "control_method": "天牛刮卵、毒签堵孔；金龟子、蚜虫用菊酯类、吡虫啉"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "果腐病、炭疽病、裂果",
+                    "control_method": "果腐病、炭疽病用多菌灵、百菌清；裂果稳湿、增施钙钾肥"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、落果、果小、烂果、流胶",
+            "control_method": "裂果：均衡供水、补钙；落果：疏果稳肥；烂果：降湿通风、及时防病；流胶：防虫防伤"
+        },
+        "harvest_method": "果柄变黄、果实有香味、轻拍有声时采收；轻搬轻放，阴凉通风存放",
+        "suitable_area": "华南、云南、福建、海南等热带地区"
+    },
+    {
+        "crop_id": 65,
+        "crop_name": "草莓",
+        "crop_alias": "红莓、洋莓、地莓",
+        "crop_category": "蔷薇科草莓属多年生草本水果作物",
+        "growth_characteristic": "喜凉爽湿润、喜光，较耐寒；浅根系、喜肥；匍匐茎繁殖；连续开花结果，采收期长",
+        "suitable_soil": "疏松肥沃、富含有机质、排水良好的砂壤土；pH5.5-6.5，忌积水、重茬",
+        "planting_method": "1.选苗：脱毒壮苗、无病虫；2.定植：行距30cm、株距15-20cm；3.弓背向外、浅栽不露心",
+        "field_management": "基肥足、追肥少量多次；花期放蜂授粉；及时摘除匍匐茎、老叶、病叶；覆盖地膜保湿抑草",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、蚜虫、斜纹夜蛾",
+                    "control_method": "红蜘蛛用阿维菌素、哒螨灵；蚜虫用吡虫啉；夜蛾用氯虫苯甲酰胺"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "白粉病、灰霉病、蛇眼病",
+                    "control_method": "白粉病用醚菌酯、甲基托布津；灰霉病用腐霉利、异菌脲；蛇眼病用代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "畸形果、僵果、烂果、冻害、徒长",
+            "control_method": "畸形果：辅助授粉、稳温湿；冻害：覆盖秸秆、地膜；徒长：控氮、增光、通风"
+        },
+        "harvest_method": "果实全红、香气浓时清晨采收；带果柄轻摘，低温保鲜贮藏",
+        "suitable_area": "全国均可种植，以安徽、辽宁、山东、河北、四川为主产区"
+    },
+    {
+        "crop_id": 66,
+        "crop_name": "橙子",
+        "crop_alias": "黄果、甜橙、金球",
+        "crop_category": "芸香科柑橘属常绿乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、喜光，不耐严寒；周年生长，抽梢3-4次；嫁接繁殖，3-4年结果，寿命长",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性壤土；pH5.5-6.5，忌黏重、积水、盐碱地",
+        "planting_method": "1.定植：春植3-4月、秋植9-10月；2.株行距3×4米；3.根系舒展、压实浇透水",
+        "field_management": "幼树勤施薄肥；结果树施基肥、花前肥、壮果肥；整形修剪，通风透光；保花保果",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、潜叶蛾、木虱",
+                    "control_method": "红蜘蛛用阿维菌素、哒螨灵；潜叶蛾新梢期喷药；木虱统防统治防黄龙病"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "溃疡病、炭疽病、黄龙病",
+                    "control_method": "溃疡病用链霉素、氧氯化铜；炭疽病用甲基托布津；黄龙病挖病树、防木虱"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、黄叶、冻害、小果",
+            "control_method": "落果：稳肥、保花保果；裂果：补钙、稳湿；黄叶：补素、排水；冻害：涂白、熏烟"
+        },
+        "harvest_method": "果实着色均匀、风味充足时采收；一果一剪，轻放防腐，常温或冷藏贮藏",
+        "suitable_area": "江西、湖南、湖北、广东、广西、四川、福建等南方地区"
+    },
+    {
+        "crop_id": 67,
+        "crop_name": "甘蔗",
+        "crop_alias": "糖蔗、果蔗、薯蔗",
+        "crop_category": "禾本科甘蔗属多年生草本经济作物",
+        "growth_characteristic": "喜高温强光、喜湿耐肥；生长期长，分蘖力强；茎秆贮糖，需水量大、需肥量大",
+        "suitable_soil": "土层深厚、疏松肥沃、保水保肥的壤土、黏壤土；忌积水、贫瘠板结地",
+        "planting_method": "1.选种：健壮无病虫种茎；2.开行：行距100-120cm；3.平放种植，覆土3-4cm，压实保湿",
+        "field_management": "基肥足，追肥分苗肥、分蘖肥、伸长肥、壮尾肥；中耕培土2-3次，防倒伏防露根",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "螟虫、蚜虫、蓟马",
+                    "control_method": "螟虫用氯虫苯甲酰胺、杀虫双；蚜虫、蓟马用吡虫啉、啶虫脒"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "凤梨病、赤腐病、黑穗病、梢腐病",
+                    "control_method": "凤梨病、赤腐病种茎消毒；黑穗病轮作、拔除病株；梢腐病用波尔多液、苯醚甲环唑"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "倒伏、空心、开裂、枯心、烂种",
+            "control_method": "倒伏：培土、增钾；空心：稳湿补肥；枯心：防螟虫；烂种：种茎消毒、不积水"
+        },
+        "harvest_method": "茎秆粗壮、糖分充足、叶片转黄时收获；砍收、削叶、去梢，捆扎存放阴凉处",
+        "suitable_area": "广西、云南、广东、海南、福建、四川南部等热带亚热带地区"
+    },
+    {
+        "crop_id": 68,
+        "crop_name": "柑橘",
+        "crop_alias": "桔子、橘子、蜜橘",
+        "crop_category": "芸香科柑橘属常绿乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、喜光，怕严寒；抽梢3-4次/年；嫁接繁殖，结果早、丰产、寿命长",
+        "suitable_soil": "疏松肥沃、排水良好的微酸性砂壤土；pH5.5-6.5，忌积水、盐碱、黏重土壤",
+        "planting_method": "1.定植：春、秋两季；2.株行距3×3.5米；3.根系舒展、压实浇透定根水",
+        "field_management": "幼树勤施薄肥；结果树基肥、花前肥、稳果肥、壮果肥；整形修剪，控冠透光；保花保果",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、锈壁虱、潜叶蛾、木虱、小实蝇",
+                    "control_method": "红蜘蛛、锈壁虱用杀螨剂；潜叶蛾新梢期用药；木虱统防统治；小实蝇诱杀+药剂"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "黄龙病、溃疡病、炭疽病、疮痂病",
+                    "control_method": "黄龙病挖病树、防木虱；溃疡病用链霉素、铜制剂；炭疽、疮痂病用甲基托布津、代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、黄叶、冻害、小果",
+            "control_method": "落果：稳肥、保果；裂果：补钙、稳湿；黄叶：补素、排水；冻害：涂白、熏烟、覆盖"
+        },
+        "harvest_method": "果实着色均匀、风味浓郁时采收；一果一剪，轻放防腐，常温或冷藏",
+        "suitable_area": "长江以南各省，广东、广西、湖南、湖北、江西、四川、福建为主产区"
+    }
+    {
+        "crop_id": 69,
+        "crop_name": "核桃",
+        "crop_alias": "胡桃、羌桃",
+        "crop_category": "胡桃科核桃属落叶乔木干果果树",
+        "growth_characteristic": "喜光、耐寒、耐旱、适应性强；深根性，寿命长；雌雄同株异花，嫁接苗2-3年结果",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的砂壤土；pH7.0-7.5，忌低洼积水、黏重土壤",
+        "planting_method": "1.选苗：健壮无病嫁接苗；2.定植：株行距4×5米；3.栽植：根系舒展，埋土至根颈，浇透水",
+        "field_management": "基肥秋施为主，追肥分萌芽、花前、膨果期；冬季修剪，夏剪控旺；幼树防寒防抽条",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "核桃举肢蛾、云斑天牛、红蜘蛛",
+                    "control_method": "举肢蛾地面+树上用药；天牛毒签堵孔、人工捕杀；红蜘蛛用阿维菌素、哒螨灵"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "黑斑病、炭疽病、枝枯病",
+                    "control_method": "黑斑病用农用链霉素、波尔多液；炭疽病、枝枯病用甲基托布津、代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "空壳、落果、烂果、枝枯、冻害抽条",
+            "control_method": "空壳：补硼钾肥；落果：稳肥稳水；枝枯：修剪清园；抽条：埋土、涂白、培土防寒"
+        },
+        "harvest_method": "青皮开裂、坚果饱满时采收；去青皮、清洗、晾晒，干燥通风贮藏",
+        "suitable_area": "华北、西北、西南、华中山区广泛种植"
+    },
+    {
+        "crop_id": 70,
+        "crop_name": "黄皮",
+        "crop_alias": "黄弹、黄枇、黄皮果",
+        "crop_category": "芸香科黄皮属常绿小乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、喜光，不耐寒；生长快，结果早；周年常绿，一年多次抽梢",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性砂壤土；忌积水、黏重板结地",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距3×4米；3.栽植：浇足定根水，遮阴缓苗",
+        "field_management": "幼树勤施薄肥；结果树采后重施基肥；疏剪病弱枝、过密枝，保持通风透光",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、潜叶蛾、金龟子",
+                    "control_method": "蚜虫、潜叶蛾用吡虫啉、氯虫苯甲酰胺；金龟子人工捕杀+药剂防治"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "根腐病、炭疽病、霜疫霉病",
+                    "control_method": "根腐病排水+药剂灌根；炭疽病、霜疫霉病用甲基托布津、乙磷铝"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "黄叶、烂根、落果、裂果、小果",
+            "control_method": "黄叶：补肥排水；烂根：高垄防涝；落果：稳肥稳水；裂果：均衡供水补钙"
+        },
+        "harvest_method": "果实着色均匀、香气浓郁时采收；一穗一剪，轻放防腐，常温短期贮藏",
+        "suitable_area": "华南、西南、福建、海南等热带亚热带地区"
+    },
+    {
+        "crop_id": 71,
+        "crop_name": "火龙果",
+        "crop_alias": "红龙果、青龙果、仙蜜果",
+        "crop_category": "仙人掌科量天尺属多年生蔓性水果作物",
+        "growth_characteristic": "喜高温强光、耐旱怕涝；附生性蔓藤，气生根攀援；扦插易活，当年种当年结果",
+        "suitable_soil": "疏松透气、排水良好的砂壤土、腐殖土；pH5.5-7.5，忌积水、黏重土壤",
+        "planting_method": "1.育苗：扦插健壮茎段；2.定植：行距2.5米、株距1.5米；3.浅栽，搭架引蔓",
+        "field_management": "基肥足，追肥少量多次；及时绑蔓、摘心、疏芽；采后剪除结果枝，促新梢",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "白蚁、蜗牛、蚜虫、果蝇",
+                    "control_method": "白蚁用灭蚁灵；蜗牛撒石灰、诱杀；蚜虫用吡虫啉；果蝇套袋+诱杀"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "溃疡病、软腐病、茎枯病",
+                    "control_method": "溃疡病、软腐病切除病部+咪鲜胺、春雷霉素；茎枯病清园+代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、落果、烂茎、徒长、小果",
+            "control_method": "裂果：均衡供水；烂茎：排水通风；徒长：控氮摘心；小果：疏果增肥"
+        },
+        "harvest_method": "果实全红、鳞片软化、香气透出时采收；轻剪果柄，常温通风或冷藏",
+        "suitable_area": "海南、广西、广东、云南、福建、贵州南部"
+    },
+    {
+        "crop_id": 72,
+        "crop_name": "芒果",
+        "crop_alias": "檬果、漭果、蜜望",
+        "crop_category": "漆树科芒果属常绿乔木热带水果作物",
+        "growth_characteristic": "喜高温强光、耐旱怕霜冻；生长快，结果早；周年抽梢，反季节栽培可多批结果",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性壤土；忌低洼积水、盐碱地",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距4×5米；3.浇足定根水，遮阴缓苗",
+        "field_management": "幼树促梢扩冠；结果树控梢促花；疏花疏果，果实套袋；采后重施基肥",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "芒果蛀心虫、蓟马、白蛾蜡蝉、脊胸天牛",
+                    "control_method": "蛀心虫、蓟马用菊酯类、吡虫啉；天牛毒签堵孔；蜡蝉统一喷药"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "炭疽病、角斑病、煤烟病",
+                    "control_method": "炭疽病、煤烟病用甲基托布津、百菌清；角斑病用农用链霉素、铜制剂"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、畸形果、烂果、煤烟、流胶",
+            "control_method": "落果：稳肥稳水、保果；畸形果：控温补素；煤烟：防虫+清洁；流胶：防虫防伤"
+        },
+        "harvest_method": "果实饱满、果肩圆润、色泽达标时采收；一果一剪，轻放防腐，后熟上市",
+        "suitable_area": "海南、广西、广东、云南、福建、四川攀枝花"
+    },
+    {
+        "crop_id": 73,
+        "crop_name": "梨",
+        "crop_alias": "雪梨、鸭梨、黄金梨",
+        "crop_category": "蔷薇科梨属落叶乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、适应性广；深根性，寿命长；嫁接繁殖，3-4年结果",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的砂壤土；pH5.5-7.5，忌黏重、积水、盐碱地",
+        "planting_method": "1.选苗：健壮无病苗；2.定植：株行距2×3米或3×4米；3.根系舒展，浇透水",
+        "field_management": "基肥秋施；追肥分萌芽、花前、膨果、采后；整形修剪，开心形或纺锤形；疏花疏果套袋",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "梨小食心虫、梨木虱、黄粉虫、红蜘蛛",
+                    "control_method": "食心虫、木虱用氯虫苯甲酰胺、吡虫啉；黄粉虫套袋前喷药；红蜘蛛用杀螨剂"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "黑星病、轮纹病、腐烂病、锈病",
+                    "control_method": "黑星病、锈病用粉锈宁、烯唑醇；轮纹、腐烂病刮斑涂药"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、畸形、烂果、冻害",
+            "control_method": "落果：疏果稳肥；裂果：补钙稳湿；冻害：涂白、培土、熏烟"
+        },
+        "harvest_method": "果实成熟、色泽风味达标时采收；一果一剪，套袋果带袋采收，冷藏保鲜",
+        "suitable_area": "全国广泛种植，华北、西北、东北、西南为主产区"
+    },
+    {
+        "crop_id": 74,
+        "crop_name": "李子",
+        "crop_alias": "嘉庆子、李仔、山李",
+        "crop_category": "蔷薇科李属落叶乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、适应性强；生长快，结果早；自花结实，需配置授粉树",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH5.5-7.5，忌低洼积水、黏重土壤",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距2×3米；3.浇足定根水",
+        "field_management": "幼树轻剪长放；结果树疏剪过密枝、病弱枝；疏花疏果，稳肥稳水防落果",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "李小食心虫、红蜘蛛、蚜虫、白星金龟子",
+                    "control_method": "食心虫、蚜虫用菊酯类、吡虫啉；红蜘蛛用杀螨剂；金龟子诱杀+人工捕捉"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "细菌性穿孔病、流胶病、炭疽病",
+                    "control_method": "穿孔病用农用链霉素；流胶病刮胶涂药；炭疽病用甲基托布津"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、流胶、烂果、小果",
+            "control_method": "落果：疏果保果；裂果：均衡供水补钙；流胶：防虫防伤、修剪轻剪"
+        },
+        "harvest_method": "果实着色均匀、风味甜香时采收；轻摘轻放，常温或冷藏保鲜",
+        "suitable_area": "全国各省均有种植，东北、华北、西南、华中为主产区"
+    },
+    {
+        "crop_id": 75,
+        "crop_name": "荔枝",
+        "crop_alias": "离枝、丹荔",
+        "crop_category": "无患子科荔枝属常绿乔木热带水果作物",
+        "growth_characteristic": "喜高温高湿、强光，怕霜冻；生长周期长，寿命长；花芽分化需低温干旱",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性砂壤土；忌积水、黏重板结地",
+        "planting_method": "1.选苗：健壮嫁接苗或圈枝苗；2.定植：株行距4×4米；3.浇足定根水，遮阴",
+        "field_management": "采后重施基肥；促梢、控梢、促花；疏花疏果，稳肥稳水；冬季清园",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "荔枝瘿螨、白蚁、蒂蛀虫、霜疫霉病虫媒",
+                    "control_method": "瘿螨、蒂蛀虫用阿维菌素、氯虫苯甲酰胺；白蚁诱杀+药剂处理"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "霜疫霉病、炭疽病、溃疡病、地衣病",
+                    "control_method": "霜疫霉病用甲霜灵、烯酰吗啉；炭疽病用甲基托布津；溃疡病刮斑涂药"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、烂果、冻害、大小年",
+            "control_method": "落果：保果稳肥；裂果：稳湿补钙；冻害：熏烟、覆盖；大小年：合理负载"
+        },
+        "harvest_method": "果实全红、果肉甜脆、种子褐色时采收；一穗一剪，快速保鲜储运",
+        "suitable_area": "广东、广西、福建、海南、云南、四川南部"
+    },
+    {
+        "crop_id": 76,
+        "crop_name": "莲雾",
+        "crop_alias": "洋蒲桃、水翁、爪哇蒲桃",
+        "crop_category": "桃金娘科蒲桃属常绿乔木热带水果作物",
+        "growth_characteristic": "喜高温高湿、强光，不耐寒；生长快，一年多次结果；耐湿怕旱，需水量大",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土、壤土；忌积水、贫瘠板结土壤",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距4×4米；3.浇足定根水，遮阴缓苗",
+        "field_management": "幼树促梢扩冠；结果树控水控梢促花；疏花疏果，套袋；多次追肥补水",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "东方果蝇、蓟马、绿叶蝉、金龟子",
+                    "control_method": "果蝇套袋+诱杀；蓟马、绿叶蝉用吡虫啉、高效氯氟氰菊酯"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "炭疽病、果腐病、霜霉病",
+                    "control_method": "炭疽病、果腐病用甲基托布津、阿米西达；霜霉病用甲霜灵锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、烂果、小果、畸形",
+            "control_method": "落果：稳肥稳水；裂果：均衡供水；烂果：通风防病；小果：疏果增肥"
+        },
+        "harvest_method": "果实着色均匀、果脐展开、清甜脆嫩时采收；轻剪轻放，低温保鲜",
+        "suitable_area": "海南、广东、广西、福建、云南、台湾"
+    },
+    {
+        "crop_id": 77,
+        "crop_name": "柚子",
+        "crop_alias": "文旦、抛、栾",
+        "crop_category": "芸香科柑橘属常绿乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、喜光，较耐寒；树势强，树冠大，寿命长；结果母枝为内膛无叶枝",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性壤土；pH5.5-6.5，忌积水、黏重土壤",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距4×4米或4×5米；3.浇足定根水",
+        "field_management": "幼树勤施薄肥；结果树施基肥、催芽肥、稳果肥、壮果肥；整形修剪，上重下轻",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、锈壁虱、潜叶蛾、蚧壳虫",
+                    "control_method": "螨类用杀螨剂；潜叶蛾新梢期用药；蚧壳虫低龄期喷药"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "脚腐病、炭疽病、溃疡病、疮痂病",
+                    "control_method": "脚腐病排水刮治；炭疽、疮痂病用甲基托布津；溃疡病用链霉素、铜制剂"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、黄叶、烂根、小果",
+            "control_method": "落果：稳肥保果；裂果：补钙稳湿；黄叶：补素排水；烂根：高垄防涝"
+        },
+        "harvest_method": "果实成熟、果皮光亮、香气足时采收；一果一剪，轻放防腐，耐贮藏",
+        "suitable_area": "福建、广东、广西、江西、湖南、四川、重庆"
+    },
+    {
+        "crop_id": 78,
+        "crop_name": "百香果",
+        "crop_alias": "鸡蛋果、西番莲",
+        "crop_category": "西番莲科西番莲属多年生藤本水果作物",
+        "growth_characteristic": "喜高温强光、耐旱怕涝；蔓生攀援，生长快；当年种当年结果，连续开花结果",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH5.5-6.5，忌积水、黏重、重茬土壤",
+        "planting_method": "1.育苗：扦插健壮枝条；2.定植：行距2.5米、株距2米；3.搭架引蔓，浅栽",
+        "field_management": "基肥足，追肥少量多次；及时绑蔓、摘心、除卷须；疏剪过密枝，保持通风",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "果实蝇、蓟马、蚜虫、红蜘蛛",
+                    "control_method": "果实蝇套袋+诱杀；蓟马、蚜虫用吡虫啉；红蜘蛛用阿维菌素"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "病毒病、疫病、炭疽病、茎基腐",
+                    "control_method": "病毒病防虫+毒苗；疫病、茎基腐用甲霜灵、恶霉灵；炭疽病用咪鲜胺"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "皱果、卷叶、落果、烂根、药害",
+            "control_method": "皱果：补硼钾、防虫；卷叶：降温排水；烂根：防涝；药害：喷水、喷芸苔素"
+        },
+        "harvest_method": "果实自然下垂、果皮转色、香味浓时采收；轻摘轻放，常温后熟或冷藏",
+        "suitable_area": "广西、广东、海南、福建、云南、贵州、四川南部"
+    },
+    {
+        "crop_id": 79,
+        "crop_name": "蓝莓",
+        "crop_alias": "笃斯、越桔、蓝浆果",
+        "crop_category": "杜鹃花科越橘属多年生灌木水果作物",
+        "growth_characteristic": "喜酸性土壤、喜湿润凉爽、喜光；浅根系，须根发达；耐寒冷，喜有机质",
+        "suitable_soil": "疏松透气、富含有机质的强酸性砂壤土；pH4.0-5.5，忌钙质土、积水地",
+        "planting_method": "1.选苗：健壮组培苗或扦插苗；2.定植：株行距1×2米；3.土壤调酸后栽植",
+        "field_management": "基肥用腐殖质、松针、锯末；追肥用酸性肥；覆盖松针、秸秆保湿抑草；修剪更新枝组",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、金龟子、果蝇",
+                    "control_method": "蚜虫用吡虫啉；金龟子人工防治；果蝇套袋+诱杀"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "根瘤病、僵果病、茎溃疡病、花叶病",
+                    "control_method": "根瘤病选用无病苗；僵果病开花前用药；溃疡病修剪清园；花叶病防虫防病毒"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "黄叶、小果、僵果、烂根、冻害抽条",
+            "control_method": "黄叶：调酸补铁；小果：疏果增肥；冻害：埋土、覆盖、堆雪防寒"
+        },
+        "harvest_method": "果实全蓝、果粉完整、风味甜香时采收；轻采轻放，低温保鲜贮藏",
+        "suitable_area": "东北、山东、贵州、云南、四川、江苏、浙江等地"
+    },
+    {
+        "crop_id": 80,
+        "crop_name": "猕猴桃",
+        "crop_alias": "奇异果、羊桃、毛梨",
+        "crop_category": "猕猴桃科猕猴桃属多年生藤本水果作物",
+        "growth_characteristic": "喜凉爽湿润、半阴环境，怕强光暴晒；雌雄异株，需配授粉树；蔓生攀援",
+        "suitable_soil": "疏松肥沃、排水良好的微酸性砂壤土；pH5.5-6.5，忌黏重、积水、盐碱地",
+        "planting_method": "1.选苗：健壮嫁接苗，雌雄8:1配置；2.定植：株行距2×3米；3.搭架栽植",
+        "field_management": "基肥足，追肥分萌芽、花前、膨果、采后；人工辅助授粉；疏花疏果，稳肥稳水",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "金龟子、叶蝉、红蜘蛛、果蝇",
+                    "control_method": "金龟子、叶蝉用菊酯类；红蜘蛛用杀螨剂；果蝇诱杀+套袋"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "溃疡病、根腐病、炭疽病、褐斑病",
+                    "control_method": "溃疡病严格清园+铜制剂；根腐病排水灌根；其他用甲基托布津、代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、小果、畸形、烂根、冻害",
+            "control_method": "落果：授粉保果；畸形：补素稳温；冻害：埋土、包扎、涂白"
+        },
+        "harvest_method": "果实成熟、可溶性固形物达标时采收；轻摘轻放，低温后熟贮藏",
+        "suitable_area": "陕西、四川、贵州、重庆、湖南、湖北、河南、浙江"
+    },
+    {
+        "crop_id": 81,
+        "crop_name": "木瓜",
+        "crop_alias": "番木瓜、万寿瓠、乳瓜",
+        "crop_category": "番木瓜科番木瓜属多年生常绿小乔木水果作物",
+        "growth_characteristic": "喜高温强光、湿润环境，不耐寒；速生快长，当年种当年结果；雌雄异株或两性株",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的砂壤土；pH5.5-7.0，忌积水、黏重板结地",
+        "planting_method": "1.育苗：选壮苗，组培或播种；2.定植：株行距2×2.5米；3.浇足定根水",
+        "field_management": "基肥足，追肥少量多次；及时摘除侧芽、病叶；稳肥稳水，保持通风透光",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、蓟马、果实蝇、红蜘蛛",
+                    "control_method": "蚜虫、蓟马用吡虫啉；果实蝇套袋+诱杀；红蜘蛛用阿维菌素"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "环斑病毒病、炭疽病、根腐病",
+                    "control_method": "病毒病选用无毒苗、防虫；炭疽病用甲基托布津；根腐病排水灌根"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "畸形果、裂果、烂根、黄叶、小果",
+            "control_method": "畸形果：补素稳温；裂果：均衡供水；烂根：防涝排水；黄叶：补肥调酸"
+        },
+        "harvest_method": "果实转黄、香气透出时采收；轻摘轻放，常温后熟或冷藏",
+        "suitable_area": "海南、广东、广西、福建、云南、台湾等热带地区"
+    },
+    {
+        "crop_id": 82,
+        "crop_name": "柠檬",
+        "crop_alias": "柠果、洋柠檬、益母果",
+        "crop_category": "芸香科柑橘属常绿小乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、喜光，不耐严寒；周年抽梢，一年多次开花结果；耐贫瘠，喜钾肥",
+        "suitable_soil": "疏松肥沃、排水良好的微酸性砂壤土；pH5.5-6.5，忌积水、黏重、盐碱地",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距3×3.5米；3.浇足定根水",
+        "field_management": "幼树勤施薄肥；结果树多次追肥；修剪病弱枝、过密枝，保持通风透光",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、潜叶蛾、蚜虫、木虱",
+                    "control_method": "螨类用杀螨剂；潜叶蛾新梢期用药；蚜虫、木虱用吡虫啉"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "溃疡病、炭疽病、疮痂病、流胶病",
+                    "control_method": "溃疡病用链霉素、铜制剂；炭疽、疮痂病用甲基托布津；流胶病刮胶涂药"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、黄叶、冻害、小果",
+            "control_method": "落果：稳肥保果；裂果：补钙稳湿；冻害：涂白、熏烟、覆盖"
+        },
+        "harvest_method": "果实成熟、果皮光亮、酸度达标时采收；一果一剪，常温或冷藏长期贮藏",
+        "suitable_area": "四川、重庆、云南、广西、广东、福建、台湾"
+    },
+    {
+        "crop_id": 83,
+        "crop_name": "枇杷",
+        "crop_alias": "卢橘、金丸、腊兄",
+        "crop_category": "蔷薇科枇杷属常绿小乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、喜光，怕严寒；秋冬开花，春季结果；周年常绿，浅根系",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性砂壤土；忌积水、黏重、风口地",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距4×4米；3.浇足定根水，遮阴缓苗",
+        "field_management": "采后重施基肥；花前肥、稳果肥、壮果肥；疏花疏果，套袋；冬季防冻",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "黄毛虫、蚜虫、果实蝇、梨小食心虫",
+                    "control_method": "黄毛虫、食心虫用菊酯类、氯虫苯甲酰胺；果实蝇套袋+诱杀"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "炭疽病、叶斑病、花腐病、裂果病",
+                    "control_method": "炭疽病、花腐病用甲基托布津；叶斑病用代森锰锌；裂果稳湿补钙"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "冻花、落果、裂果、烂果、小果",
+            "control_method": "冻花：熏烟、覆盖；落果：保花保果；裂果：均衡供水补钙"
+        },
+        "harvest_method": "果实着色均匀、果肉甜软时采收；一果一剪，轻放防腐，低温保鲜",
+        "suitable_area": "四川、福建、浙江、江苏、安徽、湖北、云南、重庆"
+    },
+    {
+        "crop_id": 84,
+        "crop_name": "苹果",
+        "crop_alias": "平安果、平波、超凡子",
+        "crop_category": "蔷薇科苹果属落叶乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、适应性广；深根性，寿命长；嫁接繁殖，异花授粉",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的砂壤土；pH6.0-7.5，忌黏重、积水、盐碱地",
+        "planting_method": "1.选苗：健壮无病苗；2.定植：株行距2×4米或3×4米；3.配置授粉树",
+        "field_management": "基肥秋施；追肥分萌芽、花前、膨果、采后；整形修剪，疏花疏果套袋",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "红蜘蛛、蚜虫、食心虫、卷叶蛾",
+                    "control_method": "螨类用杀螨剂；蚜虫用吡虫啉；食心虫、卷叶蛾用氯虫苯甲酰胺"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "腐烂病、轮纹病、斑点落叶病、炭疽病",
+                    "control_method": "腐烂病刮斑涂药；轮纹、落叶病用甲基托布津、代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、苦痘病、冻害、大小年",
+            "control_method": "落果：疏果稳肥；苦痘病：补钙；大小年：合理负载；冻害：涂白、培土"
+        },
+        "harvest_method": "果实成熟、着色均匀、风味达标时采收；轻摘轻放，冷藏长期贮藏",
+        "suitable_area": "山东、陕西、山西、河南、河北、辽宁、甘肃、新疆"
+    },
+    {
+        "crop_id": 85,
+        "crop_name": "葡萄",
+        "crop_alias": "菩提子、山葫芦、蒲陶",
+        "crop_category": "葡萄科葡萄属多年生藤本水果作物",
+        "growth_characteristic": "喜高温强光、耐旱怕涝；蔓生攀援，生长快；花芽分化好，产量高，需搭架",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH6.0-7.5，忌积水、黏重、重茬土壤",
+        "planting_method": "1.育苗：扦插健壮枝条；2.定植：行距2.5米、株距1米；3.搭架引蔓",
+        "field_management": "基肥足，追肥分萌芽、花前、膨果、转色；摘心、绑蔓、疏花疏果；控旺稳产",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蓟马、蚜虫、红蜘蛛、透翅蛾",
+                    "control_method": "蓟马、蚜虫用吡虫啉；红蜘蛛用杀螨剂；透翅蛾人工+药剂防治"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "霜霉病、白粉病、炭疽病、白腐病",
+                    "control_method": "霜霉病用甲霜灵；白粉病用粉锈宁；炭疽、白腐病用甲基托布津、嘧菌酯"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、落果、烂穗、徒长、冻害",
+            "control_method": "裂果：均衡供水补钙；烂穗：通风防病；徒长：控氮摘心；冻害：埋土防寒"
+        },
+        "harvest_method": "果实成熟、糖酸比适宜、果粉完整时采收；轻剪轻放，低温保鲜",
+        "suitable_area": "新疆、山东、河北、辽宁、陕西、山西、云南、四川"
+    },
+    {
+        "crop_id": 86,
+        "crop_name": "桑葚",
+        "crop_alias": "桑果、桑枣、乌椹",
+        "crop_category": "桑科桑属落叶乔木或灌木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、耐贫瘠；生长快，结果早；雌雄异株，果实为聚花果",
+        "suitable_soil": "适应性广，疏松肥沃、排水良好的砂壤土最优；pH5.5-7.5，耐轻度盐碱",
+        "planting_method": "1.育苗：嫁接或扦插；2.定植：株行距2×3米；3.浇足定根水",
+        "field_management": "基肥秋施；追肥分萌芽、膨果期；修剪病弱枝、过密枝；保持通风透光",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、红蜘蛛、金龟子、果蝇",
+                    "control_method": "蚜虫、红蜘蛛用吡虫啉、阿维菌素；金龟子人工捕捉；果蝇诱杀"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "菌核病、炭疽病、根腐病",
+                    "control_method": "菌核病、炭疽病用甲基托布津；根腐病排水灌根"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、烂果、裂果、小果、黄叶",
+            "control_method": "落果：稳肥稳水；烂果：通风防病；裂果：均衡供水；黄叶：补肥排水"
+        },
+        "harvest_method": "果实紫黑、柔软多汁、甜味浓郁时采收；清晨轻采，低温保鲜，不耐储运",
+        "suitable_area": "全国广泛种植，黄河、长江流域为主产区"
+    },
+    {
+        "crop_id": 87,
+        "crop_name": "圣女果",
+        "crop_alias": "小番茄、樱桃番茄、珍珠番茄",
+        "crop_category": "茄科番茄属一年生草本水果作物",
+        "growth_characteristic": "喜温暖强光、耐旱怕涝；无限生长型，连续开花结果；需搭架整枝",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH6.0-7.0，忌积水、重茬、黏重土壤",
+        "planting_method": "1.育苗：培育壮苗；2.定植：行距80cm、株距40cm；3.搭架绑蔓",
+        "field_management": "基肥足，追肥少量多次；单干整枝，及时打杈、摘叶；稳肥稳水防裂果",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、白粉虱、棉铃虫、蓟马",
+                    "control_method": "蚜虫、粉虱用吡虫啉、啶虫脒；棉铃虫用氯虫苯甲酰胺"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "早疫病、晚疫病、病毒病、灰霉病",
+                    "control_method": "疫病用甲霜灵锰锌；病毒病防虫+毒苗；灰霉病用腐霉利、异菌脲"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、畸形果、落果、徒长、黄叶",
+            "control_method": "裂果：均衡供水补钙；畸形果：控温补素；徒长：控氮摘心"
+        },
+        "harvest_method": "果实转色均匀、风味甜香时采收；轻摘轻放，常温或低温贮藏",
+        "suitable_area": "全国均可种植，山东、广西、云南、四川、海南为主产区"
+    },
+    {
+        "crop_id": 88,
+        "crop_name": "石榴",
+        "crop_alias": "安石榴、若榴、丹若",
+        "crop_category": "石榴科石榴属落叶灌木或小乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、耐贫瘠；生长强健，寿命长；花期长，坐果率高",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH6.5-7.5，忌积水、黏重、低洼地",
+        "planting_method": "1.选苗：健壮嫁接苗或扦插苗；2.定植：株行距3×4米；3.浇足定根水",
+        "field_management": "基肥秋施；追肥分萌芽、花前、膨果期；整形修剪，开心形；疏花疏果",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "桃小食心虫、蚜虫、介壳虫、红蜘蛛",
+                    "control_method": "食心虫、蚜虫用菊酯类、吡虫啉；介壳虫低龄喷药；红蜘蛛用杀螨剂"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "干腐病、炭疽病、早期落叶病",
+                    "control_method": "干腐病、炭疽病用甲基托布津；落叶病用代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、落果、烂果、小果、干腐",
+            "control_method": "裂果：均衡供水补钙；落果：疏花稳肥；烂果：通风防病"
+        },
+        "harvest_method": "果实着色鲜艳、果皮光亮、籽粒饱满时采收；轻摘轻放，耐贮藏",
+        "suitable_area": "陕西、山东、河南、河北、四川、云南、新疆"
+    },
+    {
+        "crop_id": 89,
+        "crop_name": "柿子",
+        "crop_alias": "朱果、猴枣、镇头迦",
+        "crop_category": "柿科柿属落叶乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、适应性极强；深根性，寿命长；结果早，丰产稳产",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的壤土；pH6.0-7.5，耐贫瘠、轻度盐碱",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距4×5米；3.浇足定根水",
+        "field_management": "基肥秋施；追肥分萌芽、膨果、采后；修剪疏枝，保持通风透光；稳肥稳水",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "柿蒂虫、介壳虫、蚜虫、金龟子",
+                    "control_method": "蒂虫用菊酯类、氯虫苯甲酰胺；介壳虫低龄喷药；蚜虫用吡虫啉"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "角斑病、炭疽病、圆斑病、流胶病",
+                    "control_method": "角斑、圆斑病用代森锰锌；炭疽病用甲基托布津；流胶病防伤防虫"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、烂果、小果、冻害",
+            "control_method": "落果：稳肥保果；裂果：均衡供水；冻害：涂白、培土防寒"
+        },
+        "harvest_method": "果实成熟、果皮转黄转红时采收；轻摘轻放，脱涩后上市或贮藏",
+        "suitable_area": "全国广泛种植，华北、西北、西南、华中为主产区"
+    },
+    {
+        "crop_id": 90,
+        "crop_name": "桃",
+        "crop_alias": "桃子、桃实、寿果",
+        "crop_category": "蔷薇科李属落叶小乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、生长快；结果早，丰产；花芽分化好，易形成花芽",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH5.5-7.5，忌积水、黏重、重茬土壤",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距3×4米；3.浇足定根水",
+        "field_management": "基肥秋施；追肥分萌芽、花前、膨果、采后；开心形修剪；疏花疏果套袋",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "桃小食心虫、蚜虫、红蜘蛛、潜叶蛾",
+                    "control_method": "食心虫、潜叶蛾用氯虫苯甲酰胺；蚜虫用吡虫啉；红蜘蛛用杀螨剂"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "流胶病、穿孔病、炭疽病、褐腐病",
+                    "control_method": "流胶病刮胶涂药；穿孔病用农用链霉素；炭疽、褐腐病用甲基托布津"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、流胶、畸形、小果",
+            "control_method": "落果：疏果稳肥；裂果：补钙稳湿；流胶：防虫防伤、轻剪"
+        },
+        "harvest_method": "果实成熟、色泽风味达标时采收；轻摘轻放，低温保鲜",
+        "suitable_area": "全国各省均有种植，山东、河北、河南、四川、陕西为主产区"
+    },
+    {
+        "crop_id": 91,
+        "crop_name": "甜瓜",
+        "crop_alias": "香瓜、甘瓜、白兰瓜",
+        "crop_category": "葫芦科黄瓜属一年生蔓生水果作物",
+        "growth_characteristic": "喜温暖强光、耐旱怕涝；根系发达，吸肥快；雌雄同株异花，侧蔓结果",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH6.0-7.0，忌积水、黏重、重茬地",
+        "planting_method": "1.育苗：培育壮苗；2.定植：行距1.5米、株距50cm；3.搭架或爬地栽培",
+        "field_management": "基肥足，追肥少量多次；整枝摘心，留果稳位；膨果期大水大肥，后期控水增糖",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、白粉虱、瓜绢螟、地老虎",
+                    "control_method": "蚜虫、粉虱用吡虫啉；瓜绢螟用氯虫苯甲酰胺；地老虎毒饵诱杀"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "白粉病、霜霉病、枯萎病、炭疽病",
+                    "control_method": "白粉病用粉锈宁；霜霉病用甲霜灵；枯萎病嫁接+恶霉灵灌根"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、畸形、落果、烂果、徒长",
+            "control_method": "裂果：均衡供水；畸形：控温补素；徒长：控氮整枝"
+        },
+        "harvest_method": "果实成熟、香气浓郁、果柄脱落时采收；轻摘轻放，常温短期贮藏",
+        "suitable_area": "全国广泛种植，西北、华北、东北、华东为主产区"
+    },
+    {
+        "crop_id": 92,
+        "crop_name": "龙眼",
+        "crop_alias": "桂圆、益智、骊珠",
+        "crop_category": "无患子科龙眼属常绿乔木热带水果作物",
+        "growth_characteristic": "喜高温高湿、强光，怕霜冻；生长周期长，寿命长；花芽分化需冬春干旱",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的微酸性砂壤土；忌积水、黏重板结地",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距4×5米；3.浇足定根水，遮阴缓苗",
+        "field_management": "采后重施基肥；促梢、控梢、促花；疏花疏果，稳肥稳水；冬季清园防冻",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蒂蛀虫、蓟马、蝽象、白蚁",
+                    "control_method": "蒂蛀虫、蓟马用菊酯类、吡虫啉；白蚁诱杀+药剂处理"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "霜疫霉病、炭疽病、叶斑病、地衣病",
+                    "control_method": "霜疫霉病用甲霜灵；炭疽病用甲基托布津；地衣病刮除+石硫合剂"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、烂果、冻害、大小年",
+            "control_method": "落果：保果稳肥；裂果：稳湿补钙；冻害：熏烟、覆盖；大小年：合理负载"
+        },
+        "harvest_method": "果实饱满、果皮黄褐色、果肉甜脆时采收；一穗一剪，快速保鲜储运",
+        "suitable_area": "广东、广西、福建、海南、云南、四川南部"
+    },
+    {
+        "crop_id": 93,
+        "crop_name": "香蕉",
+        "crop_alias": "甘蕉、芎蕉、香牙蕉",
+        "crop_category": "芭蕉科芭蕉属多年生大型草本水果作物",
+        "growth_characteristic": "喜高温高湿、强光，不耐寒；浅根系，需肥水量大；吸芽繁殖，周年结果",
+        "suitable_soil": "土层深厚、疏松肥沃、排水良好的砂壤土；pH5.5-6.5，忌积水、黏重板结地",
+        "planting_method": "1.选苗：健壮吸芽苗；2.定植：株行距2×2.5米；3.浅栽，压实浇水",
+        "field_management": "基肥足，追肥多次；及时割除老叶、病叶；稳肥稳水，培土防倒伏；疏果断蕾",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "象鼻虫、蚜虫、红蜘蛛、蓟马",
+                    "control_method": "象鼻虫人工捕杀+药剂灌心；蚜虫、蓟马用吡虫啉；红蜘蛛用阿维菌素"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "黄叶病、黑斑病、束顶病、花叶心腐病",
+                    "control_method": "束顶、心腐病选用无毒苗、防虫；黑斑病用甲基托布津、代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "裂果、畸形、倒伏、黄叶、烂根",
+            "control_method": "裂果：均衡供水；倒伏：培土、控高；黄叶：补肥排水；烂根：防涝"
+        },
+        "harvest_method": "果实饱满、棱角饱满、皮色转淡时采收；整串砍下，后熟上市或冷藏",
+        "suitable_area": "海南、广东、广西、福建、云南、台湾等热带地区"
+    },
+    {
+        "crop_id": 94,
+        "crop_name": "杨梅",
+        "crop_alias": "树梅、机子、朱红",
+        "crop_category": "杨梅科杨梅属常绿乔木水果作物",
+        "growth_characteristic": "喜温暖湿润、耐阴，怕强光暴晒；喜酸性土壤，菌根共生；雌雄异株",
+        "suitable_soil": "疏松肥沃、排水良好的微酸性砂壤土；pH4.5-6.5，忌钙质土、积水地",
+        "planting_method": "1.选苗：健壮嫁接苗，雌雄配置；2.定植：株行距4×5米；3.浇足定根水",
+        "field_management": "基肥用酸性有机肥；追肥分萌芽、花前、膨果；修剪疏枝，保持通风透光",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "果蝇、蚜虫、介壳虫、卷叶蛾",
+                    "control_method": "果蝇诱杀+套袋；蚜虫、卷叶蛾用吡虫啉、菊酯类"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "癌肿病、褐斑病、炭疽病、根腐病",
+                    "control_method": "癌肿病刮斑涂药；褐斑、炭疽病用甲基托布津；根腐病排水灌根"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、烂果、小果、黄叶",
+            "control_method": "落果：稳肥稳水；裂果：均衡供水；黄叶：调酸补素"
+        },
+        "harvest_method": "果实着色均匀、柔软多汁、甜香浓郁时采收；清晨轻采，低温保鲜",
+        "suitable_area": "浙江、福建、江苏、安徽、江西、湖南、四川、重庆"
+    },
+    {
+        "crop_id": 95,
+        "crop_name": "樱桃",
+        "crop_alias": "莺桃、荆桃、朱樱",
+        "crop_category": "蔷薇科李属落叶小乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、早熟；生长快，结果早；花期早，易受倒春寒危害",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH6.0-7.5，忌积水、黏重、重茬土壤",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距3×4米；3.配置授粉树",
+        "field_management": "基肥秋施；追肥分萌芽、花前、采后；整形修剪，开心形；疏花疏果，防冻害",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "蚜虫、红蜘蛛、食心虫、金龟子",
+                    "control_method": "蚜虫用吡虫啉；红蜘蛛用杀螨剂；食心虫、金龟子药剂防治"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "流胶病、穿孔病、炭疽病、褐腐病",
+                    "control_method": "流胶病刮胶涂药；穿孔病用农用链霉素；炭疽、褐腐病用甲基托布津"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、冻花、畸形、小果",
+            "control_method": "落果：授粉保果；裂果：补钙稳湿；冻花：熏烟、覆盖、喷水"
+        },
+        "harvest_method": "果实成熟、色泽鲜艳、风味甜脆时采收；轻摘轻放，低温保鲜，不耐储运",
+        "suitable_area": "山东、辽宁、河北、陕西、四川、重庆、贵州、云南"
+    },
+    {
+        "crop_id": 96,
+        "crop_name": "枣",
+        "crop_alias": "红枣、大枣、枣子",
+        "crop_category": "鼠李科枣属落叶小乔木水果作物",
+        "growth_characteristic": "喜光、耐寒、耐旱、耐贫瘠；适应性极强，寿命长；结果早，丰产稳产",
+        "suitable_soil": "疏松肥沃、排水良好的砂壤土；pH6.5-7.5，耐贫瘠、轻度盐碱",
+        "planting_method": "1.选苗：健壮嫁接苗；2.定植：株行距3×4米；3.浇足定根水",
+        "field_management": "基肥秋施；追肥分萌芽、花前、膨果、采后；修剪疏枝，开心形；稳肥稳水",
+        "disease_pest_control": {
+            "pest": [
+                {
+                    "pest_name": "枣尺蠖、桃小食心虫、蚜虫、红蜘蛛",
+                    "control_method": "尺蠖、食心虫用菊酯类、氯虫苯甲酰胺；蚜虫、红蜘蛛用吡虫啉、杀螨剂"
+                }
+            ],
+            "disease": [
+                {
+                    "disease_name": "枣疯病、锈病、炭疽病、轮纹病",
+                    "control_method": "枣疯病挖除病株、防虫；锈病用三唑酮；其他用甲基托布津、代森锰锌"
+                }
+            ]
+        },
+        "abnormal_control": {
+            "abnormal_type": "落果、裂果、烂果、小果、疯枝",
+            "control_method": "落果：稳肥保果；裂果：均衡供水；疯枝：挖除病株、防治传毒昆虫"
+        },
+        "harvest_method": "果实全红、果肉甜脆、糖分充足时采收；轻摘轻放，晒干或鲜食贮藏",
+        "suitable_area": "全国广泛种植，山西、陕西、河北、河南、山东为主产区"
+    }
+]

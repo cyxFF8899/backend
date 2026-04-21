@@ -30,6 +30,7 @@ from .schemas import (
     ScheduleResponse,
     UserCreate,
     UserLogin,
+    UserUpdate,
     Token,
     UserResponse,
     GraphDebugRequest,
@@ -37,6 +38,8 @@ from .schemas import (
     KnowledgeIndexResponse,
     KnowledgeIndexUpdateRequest,
     KnowledgeUploadResponse,
+    KnowledgeNodeCreate,
+    KnowledgeEdgeCreate,
     LLMDebugRequest,
     PromptDirectDebugRequest,
     PromptRAGDebugRequest,
@@ -45,6 +48,14 @@ from .schemas import (
 )
 
 router = APIRouter(prefix="/api", tags=["api"])
+
+
+def _verify_admin(current_user: User):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Only admins can access this resource"
+        )
 _ALLOWED_KNOWLEDGE_SUFFIXES = {".txt", ".md", ".json", ".csv", ".pdf", ".doc", ".docx"}
 _SAFE_NAME_PATTERN = re.compile(r"[^0-9A-Za-z_.\-\u4e00-\u9fff]+")
 
@@ -97,13 +108,24 @@ def login(user_in: UserLogin, request: Request):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User account is disabled",
+            )
+        
         access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
         access_token = create_access_token(
             data={"sub": user.username},
             secret_key=settings.secret_key,
             expires_delta=access_token_expires
         )
-        return {"access_token": access_token, "token_type": "bearer"}
+        return {
+            "access_token": access_token, 
+            "token_type": "bearer",
+            "username": user.username,
+            "is_admin": user.is_admin
+        }
 
 
 @router.get("/auth/me", response_model=UserResponse)
@@ -357,30 +379,115 @@ def delete_schedule(
 
 # --- Admin Routes ---
 
+# --- Admin User Management Routes ---
+
 @router.get("/admin/users", response_model=List[UserResponse])
 def get_admin_users(
     request: Request,
     current_user: User = Depends(get_current_user)
 ):
-    # 增加管理员权限校验
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Only admins can access this resource")
-        
+    _verify_admin(current_user)
     db = _db_manager(request)
     with db.session() as session:
         users = session.execute(select(User)).scalars().all()
         return list(users)
 
 
+@router.get("/admin/users/{user_id}", response_model=UserResponse)
+def get_admin_user(
+    user_id: int,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    db = _db_manager(request)
+    with db.session() as session:
+        user = session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+
+
+@router.post("/admin/users", response_model=UserResponse)
+def create_admin_user(
+    user_in: UserCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    db = _db_manager(request)
+    with db.session() as session:
+        existing_user = session.execute(
+            select(User).where(User.username == user_in.username)
+        ).scalar_one_or_none()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already exists")
+        
+        new_user = User(
+            username=user_in.username,
+            email=user_in.email,
+            hashed_password=get_password_hash(user_in.password),
+            is_active=True,
+            is_admin=False
+        )
+        session.add(new_user)
+        session.flush()
+        session.refresh(new_user)
+        return new_user
+
+
+@router.put("/admin/users/{user_id}", response_model=UserResponse)
+def update_admin_user(
+    user_id: int,
+    user_in: UserUpdate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    db = _db_manager(request)
+    with db.session() as session:
+        user = session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        if user_in.email is not None:
+            user.email = user_in.email
+        if user_in.is_active is not None:
+            user.is_active = user_in.is_active
+        if user_in.is_admin is not None:
+            user.is_admin = user_in.is_admin
+        if user_in.password:
+            user.hashed_password = get_password_hash(user_in.password)
+            
+        session.flush()
+        session.refresh(user)
+        return user
+
+
+@router.delete("/admin/users/{user_id}")
+def delete_admin_user(
+    user_id: int,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    db = _db_manager(request)
+    with db.session() as session:
+        user = session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        session.delete(user)
+        return {"status": "ok"}
+
+
+# --- Admin Dashboard Routes ---
+
 @router.get("/admin/dashboard/stats")
 def get_dashboard_stats(
     request: Request,
     current_user: User = Depends(get_current_user)
 ):
-    # 增加管理员权限校验
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Only admins can access this resource")
-        
+    _verify_admin(current_user)
     db = _db_manager(request)
     with db.session() as session:
         from sqlalchemy import func
@@ -394,6 +501,175 @@ def get_dashboard_stats(
             "total_plans": plan_count,
             "system_status": "healthy"
         }
+
+
+# --- Admin Knowledge Management Routes ---
+
+def _graph_module(request: Request):
+    return getattr(request.app.state, "graph_module", None)
+
+
+@router.get("/admin/knowledge/nodes")
+def get_knowledge_nodes(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    query: str = "",
+    limit: int = 100
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    return module.search(query, limit=limit)
+
+
+@router.get("/admin/knowledge/nodes/{node_id}")
+def get_knowledge_node(
+    node_id: str,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    node = module.get_node_by_id(node_id)
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
+    return node
+
+
+@router.post("/admin/knowledge/nodes")
+def create_knowledge_node(
+    node_in: KnowledgeNodeCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    return module.create_node(node_in.label, node_in.properties)
+
+
+@router.put("/admin/knowledge/nodes/{node_id}")
+def update_knowledge_node(
+    node_id: str,
+    node_in: KnowledgeNodeCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    return module.update_node(node_id, node_in.properties)
+
+
+@router.delete("/admin/knowledge/nodes/{node_id}")
+def delete_knowledge_node(
+    node_id: str,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    success = module.delete_node(node_id)
+    return {"status": "ok" if success else "error"}
+
+
+@router.get("/admin/knowledge/edges")
+def get_knowledge_edges(
+    node_id: str,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    return module.get_relationships(node_id)
+
+
+@router.post("/admin/knowledge/edges")
+def create_knowledge_edge(
+    edge_in: KnowledgeEdgeCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    success = module.create_relationship(
+        edge_in.start_id, 
+        edge_in.end_id, 
+        edge_in.relationship_type, 
+        edge_in.properties
+    )
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to create relationship")
+    return {"status": "ok"}
+
+
+@router.delete("/admin/knowledge/edges/{rel_id}")
+def delete_knowledge_edge(
+    rel_id: int,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    module = _graph_module(request)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable")
+    success = module.delete_relationship(rel_id)
+    return {"status": "ok" if success else "error"}
+
+
+@router.get("/admin/knowledge/materials")
+def list_knowledge_materials(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    raw_dir = _raw_data_dir(request)
+    materials = []
+    for p in raw_dir.glob("*"):
+        if p.is_file():
+            materials.append({
+                "id": p.name,
+                "name": p.name,
+                "size": p.stat().st_size,
+                "created_at": datetime.fromtimestamp(p.stat().st_ctime)
+            })
+    return materials
+
+
+@router.post("/admin/knowledge/materials")
+async def upload_knowledge_material(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    file: UploadFile = File(...)
+):
+    _verify_admin(current_user)
+    return await upload_knowledge_file(request, file)
+
+
+@router.delete("/admin/knowledge/materials/{material_id}")
+def delete_knowledge_material(
+    material_id: str,
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    _verify_admin(current_user)
+    raw_dir = _raw_data_dir(request)
+    target = raw_dir / material_id
+    if target.exists() and target.is_file():
+        target.unlink()
+        return {"status": "ok"}
+    raise HTTPException(status_code=404, detail="Material not found")
 
 
 # --- Knowledge Routes (Admin/Internal) ---

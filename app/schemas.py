@@ -21,15 +21,40 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    username: str
+    is_admin: bool
 
 
 class UserResponse(BaseModel):
     id: int
     username: str
+    email: Optional[str] = None
+    is_active: bool
+    is_admin: bool
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_admin: Optional[bool] = None
+    password: Optional[str] = None
+
+
+# --- Knowledge Management Schemas ---
+class KnowledgeNodeCreate(BaseModel):
+    label: str = "Knowledge"
+    properties: dict[str, Any]
+
+
+class KnowledgeEdgeCreate(BaseModel):
+    start_id: str
+    end_id: str
+    relationship_type: str
+    properties: Optional[dict[str, Any]] = None
 
 
 # --- Chat Schemas ---

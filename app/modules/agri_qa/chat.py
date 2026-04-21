@@ -18,6 +18,7 @@ from .router import RouterModule
 class ChatModule:
     _EMPTY_ANSWER = "当前暂时无法生成答案，请稍后重试。"
     _HANDOFF_ANSWER = "当前问题不在农业问答范围内，请补充农业相关问题。"
+    _MIN_CITATION_SCORE = 0.6
     _SYMBOL_PATTERN = re.compile(r"[{}\[\]\\\"'“”‘’`]")
     _SPACE_PATTERN = re.compile(r"\s+")
 
@@ -396,7 +397,10 @@ class ChatModule:
         for hit in retrieval_hits:
             content = str(hit.get("content") or "").strip()
             source = str(hit.get("source") or "").strip()
+            score = self._normalize_score(hit.get("score", 0.0))
             if not content:
+                continue
+            if score < self._MIN_CITATION_SCORE:
                 continue
             key = (content[:120], source)
             if key in seen:
@@ -406,7 +410,7 @@ class ChatModule:
                 {
                     "content": content,
                     "source": source,
-                    "score": self._normalize_score(hit.get("score", 0.0)),
+                    "score": score,
                 }
             )
             if len(items) >= 5:

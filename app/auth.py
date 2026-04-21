@@ -60,4 +60,9 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
         user = session.execute(select(User).where(User.username == username)).scalar_one_or_none()
         if user is None:
             raise credentials_exception
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User account is disabled",
+            )
         return user

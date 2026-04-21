@@ -1,7 +1,8 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 from langchain_core.documents import Document
@@ -17,6 +18,11 @@ def load_documents_from_raw(data_dir: Path) -> list[Document]:
         return []
 
     documents: list[Document] = []
+    enable_unstructured = os.getenv("ENABLE_UNSTRUCTURED_LOADER", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
     for path in sorted(data_dir.iterdir()):
         if path.is_dir():
             continue
@@ -30,7 +36,7 @@ def load_documents_from_raw(data_dir: Path) -> list[Document]:
         if suffix in {".txt", ".md"}:
             documents.extend(_load_text_file(path))
             continue
-        if suffix in {".pdf", ".doc", ".docx"}:
+        if suffix in {".pdf", ".doc", ".docx"} and enable_unstructured:
             documents.extend(_load_unstructured_file(path))
     return documents
 
