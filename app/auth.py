@@ -66,3 +66,20 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
                 detail="User account is disabled",
             )
         return user
+
+
+async def get_optional_user(request: Request, token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False))) -> Optional[User]:
+    if token is None:
+        return None
+    settings = request.app.state.settings
+    db_manager = request.app.state.db
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            return None
+    except JWTError:
+        return None
+    with db_manager.session() as session:
+        user = session.execute(select(User).where(User.username == username)).scalar_one_or_none()
+        return user

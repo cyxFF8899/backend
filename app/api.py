@@ -16,6 +16,7 @@ from .auth import (
     verify_password,
     create_access_token,
     get_current_user,
+    get_optional_user,
 )
 from .models import User, ChatMessage, PlantingPlan
 from .schemas import (
@@ -139,12 +140,13 @@ def get_me(current_user: User = Depends(get_current_user)):
 def chat(
     req: ChatRequest, 
     request: Request,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_optional_user)
 ) -> dict[str, Any]:
     module = _chat_module(request)
+    user_id = str(current_user.id) if current_user else "0"
     return module.chat(
         query=req.query,
-        user_id=str(current_user.id),
+        user_id=user_id,
         session_id=req.session_id,
         location=req.location,
         rag=req.rag,
@@ -155,15 +157,16 @@ def chat(
 def chat_stream(
     req: ChatRequest, 
     request: Request,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_optional_user)
 ) -> StreamingResponse:
     module = _chat_module(request)
+    user_id = str(current_user.id) if current_user else "0"
 
     def event_iter() -> Iterator[str]:
         try:
             for event in module.stream_chat(
                 query=req.query,
-                user_id=str(current_user.id),
+                user_id=user_id,
                 session_id=req.session_id,
                 location=req.location,
                 rag=req.rag,
@@ -811,6 +814,78 @@ def debug_graph(req: GraphDebugRequest, request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=503, detail="Graph module is unavailable.")
     hits = module.search(req.query, limit=max(1, int(req.limit)))
     return {"hits": hits, "count": len(hits)}
+
+
+@router.get("/graph/stats")
+def graph_stats(request: Request) -> dict[str, Any]:
+    module = getattr(request.app.state, "graph_module", None)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
+    return module.get_stats()
+
+
+@router.get("/graph/labels")
+def graph_labels(request: Request) -> dict[str, Any]:
+    module = getattr(request.app.state, "graph_module", None)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
+    label_counts = module.get_labels()
+    return {"label_counts": label_counts}
+
+
+@router.get("/graph/nodes")
+def graph_nodes(
+    request: Request,
+    label: str = None,
+    keyword: str = None,
+    limit: int = 100
+) -> dict[str, Any]:
+    module = getattr(request.app.state, "graph_module", None)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
+    nodes = module.get_nodes(label=label, keyword=keyword, limit=limit)
+    return {"nodes": nodes, "count": len(nodes)}
+
+
+@router.get("/graph/subgraph")
+def graph_subgraph(
+    request: Request,
+    depth: int = 1,
+    limit: int = 80,
+    keyword: str = None,
+    label: str = None,
+    node_ids: str = None
+) -> dict[str, Any]:
+    module = getattr(request.app.state, "graph_module", None)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
+
+    node_id_list = []
+    if node_ids:
+        node_id_list = node_ids.split(",")
+
+    subgraph = module.get_subgraph(
+        depth=depth,
+        limit=limit,
+        keyword=keyword,
+        label=label,
+        node_ids=node_id_list if node_id_list else None
+    )
+    return {
+        "nodes": subgraph["nodes"],
+        "edges": subgraph.get("edges", []),
+        "node_count": len(subgraph["nodes"]),
+        "relationship_count": len(subgraph.get("edges", []))
+    }
+
+
+@router.get("/graph/relationships/{node_id:path}")
+def graph_node_relationships(node_id: str, request: Request) -> dict[str, Any]:
+    module = getattr(request.app.state, "graph_module", None)
+    if not module:
+        raise HTTPException(status_code=503, detail="Graph module is unavailable.")
+    relationships = module.get_node_relationships(node_id)
+    return {"relationships": relationships}
 
 
 @router.post("/debug/router")
