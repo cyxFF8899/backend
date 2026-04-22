@@ -32,10 +32,6 @@ data/*.db
 *.sqlite
 *.sqlite3
 
-# Environment files
-.env
-.env.local
-
 # IDE/editor files
 .vscode/
 .idea/
