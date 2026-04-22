@@ -19,6 +19,7 @@ class ChatModule:
     _EMPTY_ANSWER = "当前暂时无法生成答案，请稍后重试。"
     _HANDOFF_ANSWER = "当前问题不在农业问答范围内，请补充农业相关问题。"
     _MIN_CITATION_SCORE = 0.6
+    _MIN_RAG_SCORE_TO_FORCE_EXPERT = 0.5
     _SYMBOL_PATTERN = re.compile(r"[{}\[\]\\\"'“”‘’`]")
     _SPACE_PATTERN = re.compile(r"\s+")
 
@@ -159,10 +160,14 @@ class ChatModule:
         )
 
         retrieval_hits: list[dict[str, Any]] = []
-        if target == "agri_expert":
+        if target != "handoff":
             retrieval_hits = self._clean_hits(
                 self.retrieval.search(query=clean_query, user_id=user_id, location=clean_location)
             )
+            if target == "clarify" and retrieval_hits:
+                top_score = max(float(hit.get("score", 0.0)) for hit in retrieval_hits)
+                if top_score >= self._MIN_RAG_SCORE_TO_FORCE_EXPERT:
+                    target = "agri_expert"
 
         return {
             "mode": "rag",

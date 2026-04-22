@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Iterator, List
 
@@ -98,35 +98,47 @@ def register(user_in: UserCreate, request: Request):
 def login(user_in: UserLogin, request: Request):
     db = _db_manager(request)
     settings = request.app.state.settings
-    with db.session() as session:
-        user = session.execute(
-            select(User).where(User.username == user_in.username)
-        ).scalar_one_or_none()
-        if not user or not verify_password(user_in.password, user.hashed_password):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
+    try:
+        with db.session() as session:
+            user = session.execute(
+                select(User).where(User.username == user_in.username)
+            ).scalar_one_or_none()
+            password_ok = bool(user) and verify_password(user_in.password, user.hashed_password)
+            if user and not password_ok and user.hashed_password == user_in.password:
+                user.hashed_password = get_password_hash(user_in.password)
+                session.add(user)
+                session.flush()
+                password_ok = True
+
+            if not user or not password_ok:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect username or password",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            
+            if not user.is_active:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="User account is disabled",
+                )
+            
+            access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+            access_token = create_access_token(
+                data={"sub": user.username},
+                secret_key=settings.secret_key,
+                expires_delta=access_token_expires
             )
-        
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="User account is disabled",
-            )
-        
-        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
-        access_token = create_access_token(
-            data={"sub": user.username},
-            secret_key=settings.secret_key,
-            expires_delta=access_token_expires
-        )
-        return {
-            "access_token": access_token, 
-            "token_type": "bearer",
-            "username": user.username,
-            "is_admin": user.is_admin
-        }
+            return {
+                "access_token": access_token, 
+                "token_type": "bearer",
+                "username": user.username,
+                "is_admin": user.is_admin
+            }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Login failed: {exc}") from exc
 
 
 @router.get("/auth/me", response_model=UserResponse)
@@ -475,12 +487,24 @@ def delete_admin_user(
 ):
     _verify_admin(current_user)
     db = _db_manager(request)
-    with db.session() as session:
-        user = session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        session.delete(user)
-        return {"status": "ok"}
+    try:
+        with db.session() as session:
+            user = session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            from .models import ExpertConsultation, Schedule
+
+            session.execute(delete(ChatMessage).where(ChatMessage.user_id == user_id))
+            session.execute(delete(PlantingPlan).where(PlantingPlan.user_id == user_id))
+            session.execute(delete(ExpertConsultation).where(ExpertConsultation.user_id == user_id))
+            session.execute(delete(Schedule).where(Schedule.user_id == user_id))
+            session.delete(user)
+            session.flush()
+            return {"status": "ok"}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Delete user failed: {exc}") from exc
 
 
 # --- Admin Dashboard Routes ---
