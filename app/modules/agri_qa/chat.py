@@ -22,6 +22,7 @@ class ChatModule:
     _MIN_RAG_SCORE_TO_FORCE_EXPERT = 0.5
     _SYMBOL_PATTERN = re.compile(r"[{}\[\]\\\"'“”‘’`]")
     _SPACE_PATTERN = re.compile(r"\s+")
+    _SOURCE_SPLIT_PATTERN = re.compile(r"[\\/]+")
 
     def __init__(
         self,
@@ -209,7 +210,7 @@ class ChatModule:
         )
 
     def _build_response(self, *, context: dict[str, Any], answer: str) -> dict[str, Any]:
-        citations = self._collect_citations(context["retrieval_hits"])
+        citations: list[dict[str, Any]] = []
         need_followup, followup_questions = self._build_followups(context=context, answer=answer)
         return {
             "answer": answer,
@@ -352,26 +353,33 @@ class ChatModule:
                 continue
 
             content = self._clean_text(hit.get("content", ""))
-            source = self._clean_text(hit.get("source", ""))
             if not content:
                 continue
 
-            key = (source, content[:120])
+            key = content[:120]
             if key in seen:
                 continue
             seen.add(key)
 
             item: dict[str, Any] = {
                 "content": content,
-                "source": source or "unknown",
                 "score": self._normalize_score(hit.get("score", 0.0)),
             }
-            metadata = hit.get("metadata", {})
-            if isinstance(metadata, dict):
-                item["metadata"] = metadata
             cleaned.append(item)
 
         return cleaned
+
+    @classmethod
+    def _sanitize_source(cls, raw: Any) -> str:
+        text = str(raw or "").strip()
+        if not text:
+            return ""
+        normalized = text.replace("\\", "/")
+        normalized = cls._SOURCE_SPLIT_PATTERN.sub("/", normalized)
+        name = normalized.rsplit("/", 1)[-1].strip()
+        if not name or name.endswith(":"):
+            return ""
+        return name
 
     @staticmethod
     def _normalize_score(raw: Any) -> float:
@@ -407,6 +415,7 @@ class ChatModule:
                 continue
             if score < self._MIN_CITATION_SCORE:
                 continue
+            source = self._clean_text(self._sanitize_source(source))
             key = (content[:120], source)
             if key in seen:
                 continue

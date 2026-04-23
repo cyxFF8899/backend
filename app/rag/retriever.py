@@ -108,7 +108,7 @@ class Retriever:
                 continue
 
             metadata = dict(getattr(doc, "metadata", {}) or {})
-            source = str(metadata.get("source") or "knowledge_base")
+            source = "knowledge_base"
             question = str(metadata.get("question") or "").strip()
             record_id = str(metadata.get("record_id") or "").strip()
 
