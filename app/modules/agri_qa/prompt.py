@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 from typing import Any
@@ -39,7 +39,11 @@ CLARIFY_SYSTEM_PROMPT = """
 """
 
 DIRECT_SYSTEM_PROMPT = """你是农业问答助手。
-当前未启用检索，请直接回答用户问题；若涉及外部事实，明确说明“本回答未使用检索证据”。"""
+当前知识库中没有找到与用户问题高度相关的资料，请直接基于你的知识回答用户问题。
+回答时请注意：
+1. 尽量提供有用的农业相关信息
+2. 若问题超出农业领域，可以适当回答，但建议用户关注农业相关问题
+3. 语气友好专业，像面对面交谈的农技员"""
 
 FOLLOWUP_SYSTEM_PROMPT = """你是农业问答助手。
 请根据当前上下文决定是否需要追问。
