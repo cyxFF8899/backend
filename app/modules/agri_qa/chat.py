@@ -169,6 +169,23 @@ class ChatModule:
                 top_score = max(float(hit.get("score", 0.0)) for hit in retrieval_hits)
                 if top_score >= self._MIN_RAG_SCORE_TO_FORCE_EXPERT:
                     target = "agri_expert"
+            
+            # 低相关度判断，使用普通回答模式
+            if retrieval_hits:
+                top_score = max(float(hit.get("score", 0.0)) for hit in retrieval_hits)
+                # 设置低相关度阈值为0.35
+                if top_score < 0.35:
+                    return {
+                        "mode": "direct_llm",
+                        "query": clean_query,
+                        "user_id": user_id,
+                        "session_id": sid,
+                        "location": clean_location,
+                        "intent_packet": intent_packet,
+                        "target": "llm_direct",
+                        "history": history,
+                        "retrieval_hits": retrieval_hits,
+                    }
 
         return {
             "mode": "rag",

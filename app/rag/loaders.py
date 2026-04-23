@@ -26,6 +26,10 @@ def load_documents_from_raw(data_dir: Path) -> list[Document]:
     for path in sorted(data_dir.iterdir()):
         if path.is_dir():
             continue
+        name_lower = path.name.lower()
+        # Skip temporary/training dump files; they are noisy for online retrieval.
+        if name_lower.startswith(("tmp", "train_")):
+            continue
         suffix = path.suffix.lower()
         if suffix == ".json":
             documents.extend(_load_json_qa(path))
@@ -79,6 +83,8 @@ def _load_json_qa(path: Path) -> list[Document]:
             continue
 
         page_content = f"问题：{user_value}\n回答：{assistant_value}" if assistant_value else f"问题：{user_value}"
+        if _looks_garbled_text(page_content):
+            continue
 
         out.append(
             Document(
@@ -126,6 +132,8 @@ def _load_text_file(path: Path) -> list[Document]:
         return []
     if not content:
         return []
+    if _looks_garbled_text(content):
+        return []
     return [
         Document(
             page_content=content,
@@ -155,10 +163,13 @@ def _load_csv_file(path: Path) -> list[Document]:
                         pieces.append(f"{field}: {value}")
                 if not pieces:
                     continue
+                page_content = "\n".join(pieces)
+                if _looks_garbled_text(page_content):
+                    continue
 
                 rows.append(
                     Document(
-                        page_content="\n".join(pieces),
+                        page_content=page_content,
                         metadata={
                             "source": str(path),
                             "doc_type": "csv_row",
@@ -170,3 +181,16 @@ def _load_csv_file(path: Path) -> list[Document]:
         return []
 
     return rows
+
+
+def _looks_garbled_text(text: str) -> bool:
+    sample = str(text or "").strip()
+    if not sample:
+        return False
+    sample = sample[:2000]
+
+    # Common mojibake patterns from UTF-8 text decoded with a legacy charset.
+    suspicious_chars = sum(1 for ch in sample if "\u00C0" <= ch <= "\u00FF")
+    replacement_chars = sample.count("�")
+    ratio = (suspicious_chars + replacement_chars * 2) / max(1, len(sample))
+    return ratio >= 0.12
