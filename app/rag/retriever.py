@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -25,21 +26,28 @@ class Retriever:
 
         vectorstore = self.index_service.get_vectorstore()
         top_k = max(1, int(k or self.settings.top_k_hits))
+        candidate_k = max(top_k * 8, 20)
         clean_location = self._clean_location(location)
 
         # 带地区先检索一轮，再用原问题兜底，提升命中率同时保持兼容。
         queries = self._build_query_variants(text=text, location=clean_location)
         merged: dict[tuple[str, str], dict[str, Any]] = {}
         for q in queries:
-            for hit in self._search_once(vectorstore=vectorstore, query=q, top_k=top_k):
+            for hit in self._search_once(vectorstore=vectorstore, query=q, top_k=candidate_k):
                 key = (str(hit.get("source") or ""), str(hit.get("content") or "")[:120])
                 old = merged.get(key)
                 if old is None or float(hit.get("score", 0.0)) > float(old.get("score", 0.0)):
                     merged[key] = hit
 
         hits = list(merged.values())
+        keywords = self._query_keywords(text)
+        if keywords:
+            matched = [x for x in hits if self._keyword_coverage(str(x.get("content") or ""), keywords) > 0]
+            if matched:
+                hits = matched
         if clean_location:
             self._apply_location_boost(hits=hits, location=clean_location)
+        self._apply_quality_adjustments(hits=hits, query=text)
 
         hits.sort(key=lambda item: float(item.get("score", 0.0)), reverse=True)
         return hits[:top_k]
@@ -92,6 +100,68 @@ class Retriever:
                     return True
         return False
 
+    @classmethod
+    def _apply_quality_adjustments(cls, *, hits: list[dict[str, Any]], query: str) -> None:
+        keywords = cls._query_keywords(query)
+        for hit in hits:
+            content = str(hit.get("content") or "")
+            score = float(hit.get("score", 0.0))
+
+            if cls._looks_like_link_list(content):
+                score *= 0.65
+            if cls._looks_like_json_fragment(content):
+                score *= 0.82
+            if keywords and cls._keyword_coverage(content, keywords) > 0:
+                score += 0.1
+
+            hit["score"] = round(max(0.0, min(1.0, score)), 4)
+
+    @staticmethod
+    def _query_keywords(query: str) -> list[str]:
+        q = str(query or "").strip()
+        if not q:
+            return []
+
+        cleaned = re.sub(r"[^\u4e00-\u9fa5A-Za-z0-9]", "", q)
+        stop_phrases = ("如何", "怎么", "怎样", "请问", "防治", "防控", "措施", "方法", "技术")
+        for s in stop_phrases:
+            cleaned = cleaned.replace(s, "")
+
+        terms: set[str] = set()
+        if len(cleaned) >= 2:
+            for size in (2, 3, 4):
+                for i in range(0, max(0, len(cleaned) - size + 1)):
+                    t = cleaned[i : i + size]
+                    if t:
+                        terms.add(t)
+        if len(cleaned) >= 2:
+            terms.add(cleaned)
+        return sorted((t for t in terms if len(t) >= 2), key=len, reverse=True)[:12]
+
+    @staticmethod
+    def _keyword_coverage(content: str, keywords: list[str]) -> int:
+        text = str(content or "")
+        return sum(1 for kw in keywords if kw in text)
+
+    @staticmethod
+    def _looks_like_link_list(content: str) -> bool:
+        text = str(content or "").strip()
+        if not text:
+            return False
+        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+        if not lines:
+            return False
+        url_lines = sum(1 for ln in lines if ln.startswith("http://") or ln.startswith("https://"))
+        if url_lines >= 2 and url_lines / len(lines) >= 0.6:
+            return True
+        return False
+
+    @staticmethod
+    def _looks_like_json_fragment(content: str) -> bool:
+        text = str(content or "")
+        marker_count = text.count("{") + text.count("}") + text.count("\\\"") + text.count('":')
+        return marker_count >= 8
+
     def _normalize_results(
         self,
         docs_scores: list[tuple[Any, float]],
@@ -108,7 +178,7 @@ class Retriever:
                 continue
 
             metadata = dict(getattr(doc, "metadata", {}) or {})
-            source = str(metadata.get("source") or "knowledge_base")
+            source = "knowledge_base"
             question = str(metadata.get("question") or "").strip()
             record_id = str(metadata.get("record_id") or "").strip()
 
