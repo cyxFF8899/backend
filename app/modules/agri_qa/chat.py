@@ -20,6 +20,7 @@ class ChatModule:
     _HANDOFF_ANSWER = "当前问题不在农业问答范围内，请补充农业相关问题。"
     _MIN_CITATION_SCORE = 0.6
     _MIN_RAG_SCORE_TO_FORCE_EXPERT = 0.5
+    _HYBRID_RAG_SCORE_THRESHOLD = 0.7
     _SYMBOL_PATTERN = re.compile(r"[{}\[\]\\\"'“”‘’`]")
     _SPACE_PATTERN = re.compile(r"\s+")
     _SOURCE_SPLIT_PATTERN = re.compile(r"[\\/]+")
@@ -206,6 +207,21 @@ class ChatModule:
                 "retrieval_hits": [],
             }
 
+        if top_score < self._HYBRID_RAG_SCORE_THRESHOLD:
+            if target == "clarify":
+                target = "agri_expert"
+            return {
+                "mode": "hybrid",
+                "query": clean_query,
+                "user_id": user_id,
+                "session_id": sid,
+                "location": clean_location,
+                "intent_packet": intent_packet,
+                "target": target,
+                "history": history,
+                "retrieval_hits": retrieval_hits,
+            }
+
         if target == "clarify":
             target = "agri_expert"
 
@@ -237,6 +253,16 @@ class ChatModule:
                 query=context["query"],
                 history=context["history"],
                 location=context["location"],
+            )
+
+        if context["mode"] == "hybrid":
+            return self.prompt.build_hybrid_messages(
+                query=context["query"],
+                location=context["location"],
+                intent_packet=context["intent_packet"],
+                retrieval_hits=context["retrieval_hits"],
+                history=context["history"],
+                target=context["target"],
             )
 
         return self.prompt.build_rag_messages(

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import os
@@ -8,7 +8,9 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-load_dotenv()
+_project_root = Path(__file__).resolve().parents[1]
+_env_file = _project_root / ".env"
+load_dotenv(_env_file)
 
 
 @dataclass

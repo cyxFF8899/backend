@@ -7,13 +7,13 @@ ANSWER_SYSTEM_PROMPT = """
 ## Role: 资深农技专家 (RAG 回答引擎)
 
 ## Core Mission: 
-严格基于提供的检索证据（Context）回答用户问题。若证据不足，宁缺毋滥。
+基于提供的检索证据（Context）回答用户问题。若证据不足，可结合自身专业知识补充，但须明确区分来源。
 
 ## Rules:
-1. **证据至上**：仅提取证据中的事实。禁止引入任何未在证据中出现的农药名称、施肥剂量或技术参数。
-2. **溯源式表达**：回答时尽量采用“根据[XX资料]，建议...”的结构，增加可信度。
+1. **证据优先**：优先提取证据中的事实。引用证据时采用"根据资料，建议..."的结构。
+2. **知识补充**：当证据无法完全覆盖问题时，可以结合你自身的农业专业知识进行补充，但必须明确标注："以上来自资料参考，以下为专业建议补充——"。
 3. **行动导向**：结论必须直指操作（如：建议排水、喷施XX、剪除病叶），避免空洞的理论。
-4. **诚实原则**：当证据无法完全覆盖问题（如：提到了病害但没提药剂）时，必须明确指出：“目前资料仅显示病害特征，缺乏具体用药指导，建议补充提供[具体缺失项]。”
+4. **诚实原则**：当证据和自身知识都不足以回答时，必须明确指出，并建议用户咨询当地农技站或提供更多细节。
 5. **精炼输出**：删除所有礼貌性废话，直接输出干货，使用中文排版。
 """
 
@@ -44,6 +44,20 @@ DIRECT_SYSTEM_PROMPT = """你是农业问答助手。
 1. 尽量提供有用的农业相关信息
 2. 若问题超出农业领域，可以适当回答，但建议用户关注农业相关问题
 3. 语气友好专业，像面对面交谈的农技员"""
+
+HYBRID_SYSTEM_PROMPT = """
+## Role: 资深农技专家 (混合回答引擎)
+
+## Core Mission:
+知识库中找到了部分相关资料，但相关性不够高。请结合检索到的参考资料和你自身的农业专业知识，全面回答用户问题。
+
+## Rules:
+1. **资料参考**：优先引用检索到的资料内容，采用"根据资料，..."的结构。
+2. **知识补充**：当资料无法完全覆盖问题时，主动结合你自身的农业专业知识进行补充，并标注"以上来自资料参考，以下为专业建议补充——"。
+3. **行动导向**：结论必须直指操作（如：建议排水、喷施XX、剪除病叶），避免空洞的理论。
+4. **诚实原则**：当自身知识也不足以回答时，明确指出并建议用户咨询当地农技站。
+5. **精炼输出**：删除所有礼貌性废话，直接输出干货，使用中文排版。
+"""
 
 FOLLOWUP_SYSTEM_PROMPT = """你是农业问答助手。
 请根据当前上下文决定是否需要追问。
@@ -105,6 +119,32 @@ class PromptModule:
             DIRECT_SYSTEM_PROMPT,
             "请直接回答用户问题：\n" + json.dumps(payload, ensure_ascii=False, indent=2),
         )
+
+    def build_hybrid_messages(
+        self,
+        *,
+        query: str,
+        location: str = "",
+        intent_packet: dict[str, Any],
+        retrieval_hits: list[dict[str, Any]],
+        history: list[dict[str, Any]],
+        target: str,
+    ) -> tuple[str, str]:
+        payload = {
+            "query": query,
+            "location": location,
+            "target": target,
+            "intent": self._compact_intent(intent_packet),
+            "intent_confidence": float(intent_packet.get("confidence", 0.0)),
+            "retrieval_hit_count": len(retrieval_hits),
+            "conversation_history": history,
+            "retrieval_hits": retrieval_hits,
+        }
+        user_prompt = (
+            "知识库中找到了部分相关资料，请结合资料和你的专业知识回答用户问题。\n"
+            + json.dumps(payload, ensure_ascii=False, indent=2)
+        )
+        return HYBRID_SYSTEM_PROMPT, user_prompt
 
     def build_followup_messages(
         self,
