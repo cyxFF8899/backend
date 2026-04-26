@@ -227,7 +227,7 @@ class ChatModule:
         )
 
     def _build_response(self, *, context: dict[str, Any], answer: str) -> dict[str, Any]:
-        citations: list[dict[str, Any]] = []
+        citations: list[dict[str, Any]] = self._collect_citations(context["retrieval_hits"])
         need_followup, followup_questions = self._build_followups(context=context, answer=answer)
         return {
             "answer": answer,
