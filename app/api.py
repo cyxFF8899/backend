@@ -11,14 +11,14 @@ from fastapi import APIRouter, File, HTTPException, Request, UploadFile, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select, delete
 
-from .auth import (
+from .database.auth import (
     get_password_hash,
     verify_password,
     create_access_token,
     get_current_user,
     get_optional_user,
 )
-from .models import User, ChatMessage, PlantingPlan
+from .database.models import User, ChatMessage, PlantingPlan
 from .schemas import (
     ChatRequest,
     ChatResponse,
@@ -75,7 +75,6 @@ def _db_manager(request: Request):
 def register(user_in: UserCreate, request: Request):
     db = _db_manager(request)
     with db.session() as session:
-        # Check if user exists
         existing_user = session.execute(
             select(User).where(User.username == user_in.username)
         ).scalar_one_or_none()
@@ -89,8 +88,8 @@ def register(user_in: UserCreate, request: Request):
             is_active=True
         )
         session.add(new_user)
-        session.flush() # 确保分配了 ID
-        session.refresh(new_user) # 刷新属性
+        session.flush()
+        session.refresh(new_user)
         return new_user
 
 
@@ -281,13 +280,13 @@ def create_consultation(
 ):
     db = _db_manager(request)
     with db.session() as session:
-        from .models import ExpertConsultation
+        from .database.models import ExpertConsultation
         new_cons = ExpertConsultation(
             user_id=current_user.id,
             expert_name=cons_in.expert_name,
             category=cons_in.category,
             content=cons_in.content,
-            status="待回复"
+            status="pending"
         )
         session.add(new_cons)
         session.flush()
@@ -301,7 +300,7 @@ def list_consultations(
 ):
     db = _db_manager(request)
     with db.session() as session:
-        from .models import ExpertConsultation
+        from .database.models import ExpertConsultation
         cons = session.execute(
             select(ExpertConsultation).where(ExpertConsultation.user_id == current_user.id)
         ).scalars().all()
@@ -317,7 +316,7 @@ def list_schedules(
 ):
     db = _db_manager(request)
     with db.session() as session:
-        from .models import Schedule
+        from .database.models import Schedule
         schedules = session.execute(
             select(Schedule).where(Schedule.user_id == current_user.id)
         ).scalars().all()
@@ -332,7 +331,7 @@ def create_schedule(
 ):
     db = _db_manager(request)
     with db.session() as session:
-        from .models import Schedule
+        from .database.models import Schedule
         new_sched = Schedule(
             user_id=current_user.id,
             title=sched_in.title,
@@ -354,7 +353,7 @@ def update_schedule(
 ):
     db = _db_manager(request)
     with db.session() as session:
-        from .models import Schedule
+        from .database.models import Schedule
         sched = session.execute(
             select(Schedule).where(
                 Schedule.id == schedule_id, 
@@ -379,7 +378,7 @@ def delete_schedule(
 ):
     db = _db_manager(request)
     with db.session() as session:
-        from .models import Schedule
+        from .database.models import Schedule
         sched = session.execute(
             select(Schedule).where(
                 Schedule.id == schedule_id, 
@@ -492,7 +491,7 @@ def delete_admin_user(
             user = session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
-            from .models import ExpertConsultation, Schedule
+            from .database.models import ExpertConsultation, Schedule
 
             session.execute(delete(ChatMessage).where(ChatMessage.user_id == user_id))
             session.execute(delete(PlantingPlan).where(PlantingPlan.user_id == user_id))
@@ -744,13 +743,12 @@ def health() -> dict[str, str]:
 
 @router.get("/weather")
 def get_weather(city: str):
-    # 模拟天气数据
     return {
         "city": city,
         "temperature": 22,
-        "weather": "晴",
+        "weather": "sunny",
         "humidity": "45%",
-        "windSpeed": "3级"
+        "windSpeed": "3m/s"
     }
 
 

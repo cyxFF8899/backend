@@ -9,15 +9,12 @@ def fix_db_final():
         print(f"Connecting to {settings.database_url}")
         
         try:
-            # 1. 检查并处理 query 字段：允许为空
             print("Allowing NULL for 'query' column...")
             conn.execute(text("ALTER TABLE chat_messages MODIFY COLUMN query TEXT NULL"))
             
-            # 2. 检查并处理 answer 字段：允许为空
             print("Allowing NULL for 'answer' column...")
             conn.execute(text("ALTER TABLE chat_messages MODIFY COLUMN answer TEXT NULL"))
             
-            # 3. 检查并处理 time 字段：允许为空
             print("Allowing NULL for 'time' column...")
             conn.execute(text("ALTER TABLE chat_messages MODIFY COLUMN time DATETIME NULL"))
 

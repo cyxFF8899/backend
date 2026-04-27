@@ -22,7 +22,6 @@ class User(Base):
     is_admin: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    # Relationships
     messages: Mapped[List["ChatMessage"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     plans: Mapped[List["PlantingPlan"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     consultations: Mapped[List["ExpertConsultation"]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -34,11 +33,10 @@ class ChatMessage(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
-    role: Mapped[str] = mapped_column(String(20))  # user, assistant
+    role: Mapped[str] = mapped_column(String(20))
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    # Relationship
     user: Mapped["User"] = relationship(back_populates="messages")
 
 
@@ -48,11 +46,10 @@ class PlantingPlan(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     crop_name: Mapped[str] = mapped_column(String(100))
-    plan_details: Mapped[str] = mapped_column(Text)  # Store as JSON string or Text
-    status: Mapped[str] = mapped_column(String(20), default="进行中")  # 进行中, 已完成
+    plan_details: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default="进行中")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    # Relationship
     user: Mapped["User"] = relationship(back_populates="plans")
 
 
@@ -65,10 +62,9 @@ class ExpertConsultation(Base):
     category: Mapped[str] = mapped_column(String(50))
     content: Mapped[str] = mapped_column(Text)
     reply: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    status: Mapped[str] = mapped_column(String(20), default="待回复")  # 待回复, 已回复
+    status: Mapped[str] = mapped_column(String(20), default="待回复")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    # Relationship
     user: Mapped["User"] = relationship(back_populates="consultations")
 
 
@@ -83,5 +79,4 @@ class Schedule(Base):
     is_completed: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    # Relationship
     user: Mapped["User"] = relationship(back_populates="schedules")

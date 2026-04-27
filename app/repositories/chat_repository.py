@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any, List
 
 from sqlalchemy import select
-from ..db import DB
-from ..models import ChatMessage
+from ..database.db import DB
+from ..database.models import ChatMessage
 
 
 class ChatRepository:

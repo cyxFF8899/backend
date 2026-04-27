@@ -9,7 +9,6 @@ def add_admin_field():
         print(f"Connecting to {settings.database_url}")
         
         try:
-            # 1. 检查并添加 is_admin 字段
             result = conn.execute(text("DESCRIBE users"))
             columns = {col[0]: col for col in result.fetchall()}
             
@@ -17,8 +16,6 @@ def add_admin_field():
                 print("Adding 'is_admin' column to users table...")
                 conn.execute(text("ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE AFTER is_active"))
                 
-                # 2. 将现有用户中的某一个设为管理员 (可选，方便你测试)
-                # 假设你希望把 ID 为 1 的用户设为管理员
                 print("Setting user with ID 1 as admin for testing...")
                 conn.execute(text("UPDATE users SET is_admin = TRUE WHERE id = 1"))
             

@@ -9,7 +9,6 @@ def cleanup_database_schema():
     with engine.connect() as conn:
         print(f"Connecting to {settings.database_url}")
         
-        # 1. 获取所有包含旧数据的行
         try:
             result = conn.execute(text("SELECT id, user_id, query, answer, time FROM chat_messages WHERE query IS NOT NULL"))
             old_rows = result.fetchall()
@@ -18,21 +17,17 @@ def cleanup_database_schema():
                 print(f"Found {len(old_rows)} old turn-based records. Migrating...")
                 for row in old_rows:
                     row_id, user_id, query, answer, time_val = row
-                    # 插入用户消息
                     conn.execute(text(
                         "INSERT INTO chat_messages (user_id, role, content, created_at) VALUES (:u, 'user', :c, :t)"
                     ), {"u": user_id, "c": query, "t": time_val or datetime.utcnow()})
                     
-                    # 插入助手消息
                     conn.execute(text(
                         "INSERT INTO chat_messages (user_id, role, content, created_at) VALUES (:u, 'assistant', :c, :t)"
                     ), {"u": user_id, "c": answer, "t": time_val or datetime.utcnow()})
                     
-                    # 删除这条旧记录
                     conn.execute(text("DELETE FROM chat_messages WHERE id = :id"), {"id": row_id})
                 print("Data migration completed.")
             
-            # 2. 删除旧字段
             print("Dropping old columns: query, answer, time...")
             conn.execute(text("ALTER TABLE chat_messages DROP COLUMN query"))
             conn.execute(text("ALTER TABLE chat_messages DROP COLUMN answer"))

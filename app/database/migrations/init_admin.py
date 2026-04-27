@@ -3,8 +3,7 @@ import sys
 import os
 from pathlib import Path
 
-# 将项目根目录添加到 python 路径
-project_root = Path(__file__).resolve().parents[1] # 指向 agri4 根目录
+project_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(project_root))
 
 from backend.app.db import DB
@@ -18,7 +17,6 @@ def create_admin(username, password):
     db = DB(settings)
     
     with db.session() as session:
-        # 检查用户是否存在
         user = session.execute(
             select(User).where(User.username == username)
         ).scalar_one_or_none()
@@ -43,7 +41,6 @@ def create_admin(username, password):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        # 默认创建一个 admin / admin123
         create_admin("admin", "admin123")
     else:
         create_admin(sys.argv[1], sys.argv[2])

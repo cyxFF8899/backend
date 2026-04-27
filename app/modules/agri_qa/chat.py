@@ -6,7 +6,7 @@ import time
 from typing import Any, Iterator
 
 from ...config import Settings
-from ...db import DB
+from ...database.db import DB
 from ...repositories import ChatRepository
 from ..intent import IntentModule
 from ..retrieval import RetrievalModule
