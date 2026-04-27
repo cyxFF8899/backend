@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api import router as api_router
 from .config import Settings
-from .db import DB
+from .database import DB
 from .modules import (
     ChatModule,
     GraphModule,

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import os
@@ -8,7 +8,9 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-load_dotenv()
+_project_root = Path(__file__).resolve().parents[1]
+_env_file = _project_root / ".env"
+load_dotenv(_env_file)
 
 
 @dataclass
@@ -88,9 +90,9 @@ class Settings:
             embedding_hf_endpoint=os.getenv(
                 "EMBEDDING_HF_ENDPOINT", "https://hf-mirror.com"
             ).strip(),
-            chroma_persist_dir=os.getenv("CHROMA_PERSIST_DIR", "backend/data/chroma").strip(),
+            chroma_persist_dir=os.getenv("CHROMA_PERSIST_DIR", "data/chroma").strip(),
             chroma_collection_name=os.getenv("CHROMA_COLLECTION_NAME", "agri_knowledge").strip(),
-            index_data_dir=os.getenv("INDEX_DATA_DIR", "backend/data/raw").strip(),
+            index_data_dir=os.getenv("INDEX_DATA_DIR", "data/raw").strip(),
             index_auto_build=_safe_bool(os.getenv("INDEX_AUTO_BUILD"), True),
             rag_chunk_size=_safe_int(os.getenv("RAG_CHUNK_SIZE"), 380),
             rag_chunk_overlap=_safe_int(os.getenv("RAG_CHUNK_OVERLAP"), 60),
@@ -141,7 +143,16 @@ def _resolve_path(project_root: Path, value: str) -> Path:
     p = Path(value)
     if p.is_absolute():
         return p
-    return (project_root / p).resolve()
+    # 先尝试直接路径
+    resolved = (project_root / p).resolve()
+    if resolved.exists():
+        return resolved
+    # 如果不存在，尝试加上 backend 前缀
+    backend_resolved = (project_root / "backend" / p).resolve()
+    if backend_resolved.exists():
+        return backend_resolved
+    # 都不存在，返回原始路径
+    return resolved
 
 
 def _parse_csv_keywords(raw: str) -> list[str]:

@@ -6,7 +6,7 @@ from typing import Generator
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 
-from .config import Settings
+from ..config import Settings
 from .models import Base
 
 
@@ -14,7 +14,6 @@ class DB:
     def __init__(self, settings: Settings) -> None:
         self.engine = create_engine(
             settings.database_url,
-            # MySQL optimizations
             pool_size=10,
             max_overflow=20,
             pool_pre_ping=True
@@ -23,11 +22,10 @@ class DB:
             autocommit=False, 
             autoflush=False, 
             bind=self.engine,
-            expire_on_commit=False  # 防止提交后对象失效
+            expire_on_commit=False
         )
 
     def init(self) -> None:
-        """Create tables if they don't exist."""
         Base.metadata.create_all(bind=self.engine)
         self._ensure_schema()
 
@@ -71,7 +69,6 @@ class DB:
 
     @contextmanager
     def session(self) -> Generator[Session, None, None]:
-        """Provide a transactional scope around a series of operations."""
         session = self.SessionLocal()
         try:
             yield session
