@@ -161,6 +161,20 @@ class ChatModule:
             intent=str(intent_packet.get("intent", "")),
         )
 
+        retrieval_hits: list[dict[str, Any]] = []
+        retrieval_hits = self._clean_hits(
+            self.retrieval.search(query=clean_query, user_id=user_id, location=clean_location)
+        )
+
+        if target == "handoff" and retrieval_hits:
+            top_score = max(float(hit.get("score", 0.0)) for hit in retrieval_hits)
+            if top_score >= self._MIN_RAG_SCORE_TO_FORCE_EXPERT:
+                target = "agri_expert"
+                intent_packet["intent"] = "agri"
+                intent_packet["confidence"] = max(
+                    float(intent_packet.get("confidence", 0.0)), 0.6
+                )
+
         if target == "handoff":
             return {
                 "mode": "rag",
@@ -173,12 +187,6 @@ class ChatModule:
                 "history": history,
                 "retrieval_hits": [],
             }
-
-        retrieval_hits: list[dict[str, Any]] = []
-        if target != "handoff":
-            retrieval_hits = self._clean_hits(
-                self.retrieval.search(query=clean_query, user_id=user_id, location=clean_location)
-            )
 
         if not retrieval_hits:
             return {
@@ -275,7 +283,7 @@ class ChatModule:
         )
 
     def _build_response(self, *, context: dict[str, Any], answer: str) -> dict[str, Any]:
-        citations: list[dict[str, Any]] = []
+        citations = self._collect_citations(context.get("retrieval_hits", []))
         need_followup, followup_questions = self._build_followups(context=context, answer=answer)
         return {
             "answer": answer,
@@ -429,6 +437,7 @@ class ChatModule:
             item: dict[str, Any] = {
                 "content": content,
                 "score": self._normalize_score(hit.get("score", 0.0)),
+                "source": str(hit.get("source", "") or "").strip(),
             }
             cleaned.append(item)
 
