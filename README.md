@@ -34,7 +34,11 @@
    - `DASHSCOPE_MODEL`: 推荐使用 `glm-4.7` 或 `qwen-plus`
 
 4. **初始化数据库**:
-   如果数据库表结构不匹配，运行迁移脚本：
+   如果使用 MySQL，先创建数据库再导入 SQL 文件：
+   ```powershell
+   mysql -u root -p < backend/scripts/db_scripts/init.sql
+   ```
+   或运行迁移脚本修复表结构：
    ```powershell
    python fix_db_v2.py
    ```

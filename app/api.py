@@ -154,7 +154,7 @@ def chat(
     current_user: User = Depends(get_optional_user)
 ) -> dict[str, Any]:
     module = _chat_module(request)
-    user_id = str(current_user.id) if current_user else "0"
+    user_id = str(current_user.id) if current_user else "3"
     return module.chat(
         query=req.query,
         user_id=user_id,
@@ -171,7 +171,7 @@ def chat_stream(
     current_user: User = Depends(get_optional_user)
 ) -> StreamingResponse:
     module = _chat_module(request)
-    user_id = str(current_user.id) if current_user else "0"
+    user_id = str(current_user.id) if current_user else "3"
 
     def event_iter() -> Iterator[str]:
         try:
