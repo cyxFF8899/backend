@@ -521,10 +521,20 @@ def get_dashboard_stats(
         msg_count = session.execute(select(func.count(ChatMessage.id))).scalar()
         plan_count = session.execute(select(func.count(PlantingPlan.id))).scalar()
         
+        graph_module = _graph_module(request)
+        node_count = 0
+        if graph_module:
+            try:
+                stats = graph_module.get_stats()
+                node_count = stats.get("node_count", 0)
+            except Exception as e:
+                print(f"获取知识节点数量失败: {e}")
+        
         return {
             "total_users": user_count,
             "total_messages": msg_count,
             "total_plans": plan_count,
+            "total_knowledge_nodes": node_count,
             "system_status": "healthy"
         }
 
